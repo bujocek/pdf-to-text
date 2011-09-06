@@ -1,0 +1,10 @@
+
+
+-------------------
+ Start program 08/24/11 01:20:35
+
+pdfToText: Wrong arguments. Usage: pdfToText [input pdf file] [otput txt file]
+
+
+ End program (0.012s)
+-------------------

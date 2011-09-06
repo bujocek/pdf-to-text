@@ -1,0 +1,90 @@
+#include "StdAfx.h"
+#include "StringUtils.h"
+#include <iostream>
+
+StringUtils::StringUtils(void)
+{
+}
+
+StringUtils::~StringUtils(void)
+{
+}
+
+//TODO: Optimalization: rewrite this method to use knuth moriss pratt algorithm
+char * StringUtils::strStrModified(char * strSource, char * searchString, int length, bool caseInsensitive)
+{
+	if(strSource == NULL || searchString == NULL)
+		return NULL;
+	if(length < 0)
+		length = strlen(strSource);
+	int i = 0;
+	int len = strlen(searchString);
+	if(len > length)
+		return NULL;
+	for(; i < length-len; i++)
+	{
+		bool found = true;
+		for(int j = 0; j<len; j++)
+		{	
+			if( strSource[i+j] != searchString[j] ||
+				(caseInsensitive && tolower(strSource[i+j]) != tolower(searchString[j]) )) 
+			{
+				found = false;
+				break;
+			}
+		}
+		if(found)
+			return &strSource[i];
+	}
+	return NULL;
+}
+
+bool StringUtils::isWhiteSpace(char character)
+{
+  switch(character)
+  {
+    case 0:
+    case 9:
+    case 10:
+    case 12:
+    case 13:
+    case 32:
+      return true;
+    default:
+      return false;
+  }
+}
+
+char * StringUtils::skipWhiteSpace(char * string)
+{
+  while(StringUtils::isWhiteSpace(*string))
+    string++;
+  return string;
+}
+
+void StringUtils::fGetLine(char * destination, int maxLength, ifstream& iFile)
+{
+  int i = 0;
+  char c;
+  do
+  {
+    iFile.get(c);
+    destination[i] = c;
+    i++;
+  }while(c != EOF && c!='\r' && c!='\n' && i<maxLength-1);
+  
+  if(c == '\r' && i<maxLength-1) //find out if it is two char EOL ("\r\n")
+  {
+    iFile.get(c);
+    if(c == '\n')
+    {
+      destination[i] = c;
+      i++;
+    }
+    else //move backwards - it wasn't two char EOL
+    {
+      iFile.seekg(-1,ios_base::cur);
+    }
+  }
+  destination[i]=0;
+}
