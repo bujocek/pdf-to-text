@@ -13,7 +13,7 @@ ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
     io->load(); 
     io->processAsStream();
   }
-
+  
   //TODO: finish processing the toUnicode Cmap
   if(this->indirectObject->unencodedStream != null)
   {
