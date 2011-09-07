@@ -23,6 +23,7 @@ ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
     bcsr = StringUtils::skipWhiteSpace(bcsr);
     StringObject cf = StringObject(&bcsr, bcsr);
     codeWidth = strlen(cf.string)/2;
+    //TODO: rewrite to use more ranges than one
     codeRangeFrom = cf.toNum();
     codeRangeTo = StringObject(&bcsr, bcsr).toNum();
     bcsr = StringUtils::skipWhiteSpace(bcsr);
