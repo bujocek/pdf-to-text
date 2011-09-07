@@ -14,7 +14,7 @@
 #include <map>
 
 using namespace std;
-//Testing first commit
+
 extern bool logEnabled;
 extern map < pair < int, int >, IndirectObject* > * objectMap;
 // reference additional headers your program requires here
