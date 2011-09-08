@@ -128,13 +128,8 @@ wchar_t * charToWchar(char * source)
 wchar_t * convertHexaString(char * string, ToUnicodeCMap * cmap)
 {
   int len = strlen(string);
-  if(len % cmap->codeWidth != 0)
-  {
-    cerr<<"\nContentStream: Not Implemented - String is not multiple of codeWidth from used CMap.\n";
-    return null;
-  }
-  wchar_t * result = new wchar_t[ len / cmap->codeWidth + 1];
   //TODO: Finish converting string using CMap<<<<<<<<<<<<<<<<<<<<<<<<
+
   return charToWchar(string);
 }
 

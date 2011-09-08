@@ -4,9 +4,6 @@
 ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
 {
   this->indirectObject = io;
-  this->codeRangeFrom = 0;
-  this->codeRangeTo = 0;
-  this->codeWidth = 0;
   if(io != null)
   {
     //Probably not necessary but harmless
@@ -21,14 +18,22 @@ ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
     char * bcsr = strstr(stream, "begincodespacerange");
     bcsr += 19; //skip 'begincodespacerange' keyword
     bcsr = StringUtils::skipWhiteSpace(bcsr);
-    StringObject cf = StringObject(&bcsr, bcsr);
-    codeWidth = strlen(cf.string)/2;
-    //TODO: rewrite to use more ranges than one
-    codeRangeFrom = cf.toNum();
-    codeRangeTo = StringObject(&bcsr, bcsr).toNum();
-    bcsr = StringUtils::skipWhiteSpace(bcsr);
-    if(*bcsr == '<')
-      cerr<<"\ToUnicodeCMap: Not Implemented - More code space ranges in cmap.\n";
+    do
+    {
+      StringObject * codeFrom = new StringObject(&bcsr, bcsr);
+      StringObject * codeTo = new StringObject(&bcsr, bcsr);
+      if(codeFrom->isHexa && codeTo->isHexa)
+      {
+        codeRanges.push_front(make_pair(codeFrom->toNum(), codeTo->toNum()));
+      }
+      else
+      {
+        cerr<<"\nToUnicodeMap: Couldn't read code ranges properly.\n";
+        break;
+      }
+      bcsr = StringUtils::skipWhiteSpace(bcsr);
+    }while(*bcsr == '<');
+
     char * bbfc = strstr(stream, "beginbfchar");
     if(bbfc != null)
     {

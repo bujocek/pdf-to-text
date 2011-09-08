@@ -2,15 +2,14 @@
 #include "IndirectObject.h"
 #include "StringObject.h"
 #include "StringUtils.h"
+#include <list>
 
 class ToUnicodeCMap
 {
 private:
   IndirectObject * indirectObject;
 public:
-  int codeRangeFrom;
-  int codeRangeTo;
-  int codeWidth;
+  list <pair<int, int>> codeRanges;
   map<int, StringObject *> codeCharMap;
   ToUnicodeCMap(IndirectObject * io);
   ~ToUnicodeCMap(void);
