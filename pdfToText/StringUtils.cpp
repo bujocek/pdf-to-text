@@ -10,7 +10,7 @@ StringUtils::~StringUtils(void)
 {
 }
 
-//TODO: Optimalization: rewrite this method to use knuth moriss pratt algorithm
+//TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=4
 char * StringUtils::strStrModified(char * strSource, char * searchString, int length, bool caseInsensitive)
 {
 	if(strSource == NULL || searchString == NULL)

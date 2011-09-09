@@ -259,7 +259,7 @@ bool IndirectObject::processAsStream()
 
 long IndirectObject::deflateStream(char * streamStart, char * streamEnd, char ** output)
 {
-	//TODO: optimize output size -try to unpack per partes / not 10x input length
+	//TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=7
 	long outsize = (streamEnd - streamStart)*10; //assuming that output will not be bigger than ten times input
 
   if(this->streamDictionary != null && this->streamDictionary->getObject("DL") != null) 

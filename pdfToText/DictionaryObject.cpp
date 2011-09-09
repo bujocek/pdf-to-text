@@ -52,7 +52,7 @@ DictionaryObject::DictionaryObject(char ** endKey, char * source)
 
 DictionaryObject::~DictionaryObject(void)
 {
-  //TODO: Delete name objects used for keys
+  //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=8
 }
 
 PdfObject * DictionaryObject::getObject(char * mapKey)
