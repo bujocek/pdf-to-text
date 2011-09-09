@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
     _strdate_s( dateStr );
     _strtime_s( timeStr );
 	
-	//TODO: Get logEnabled value from command line parameter
+	//TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=5
 	logEnabled = true;
 	ofstream logStream ("logfile.txt", ios::app);
 	if(logEnabled)

@@ -67,6 +67,7 @@ wchar_t * ContentStream::getText()
         }
         else
           cerr << "\nCouldn't find font name before 'Tf' oprerator\n";
+        //TODO: move generating current ToUnicode CMap here<<<<<<<<<<<<<<<<<<
       }
       else if(strcmp(operatorObject->name,"Tj") == 0)
       {
@@ -128,7 +129,7 @@ wchar_t * charToWchar(char * source)
 wchar_t * convertHexaString(char * string, ToUnicodeCMap * cmap)
 {
   int len = strlen(string);
-  //TODO: Finish converting string using CMap<<<<<<<<<<<<<<<<<<<<<<<<
+  //TODO: Finish converting string using CMap<<<<<<<<<<<
 
   return charToWchar(string);
 }

@@ -4,8 +4,7 @@
 
 using namespace std;
 
-//TODO: Consider comments in pdf while searching for table - syntax is %comment to the eol
-//TODO: Read XRef from Cross Refference Stream too.
+//TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=2
 
 XRef::XRef(ifstream& iFile, long position)
 {
@@ -75,7 +74,7 @@ long XRef::findNextXRef()
 	file->seekg (XRefTrailerIndex); 
 	file->read(memBlock, memBlockSize);
 	trailerDictionary = new DictionaryObject(null, memBlock+7); //this mishmash with number 7 is to skip "trailer" key word
-  //TODO: get rid of old code here and use created dictionary
+  //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=1
 	char* trailerBegin = strstr(memBlock, "<<");
 	char* trailerEnd = strstr(memBlock, ">>");
 	char* prevKey = strstr(memBlock, "Prev");

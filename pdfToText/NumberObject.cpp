@@ -12,7 +12,7 @@ NumberObject::NumberObject(char ** endKey, char * source)
   this->objectType = PdfObject::TYPE_NUMBER;
   this->number = 0;
   int len = 0;
-  //TODO: place here some optimalized method instead of this sscanf shit
+  //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=6
   sscanf(source, "%f%n", &number, &len);
   *endKey = source + len;
 }
