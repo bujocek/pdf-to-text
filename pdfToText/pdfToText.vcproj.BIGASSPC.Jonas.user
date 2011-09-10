@@ -11,7 +11,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory=""
-				CommandArguments="D:\\pdf\\test\\oopdf.pdf D:\\pdf\\test\\output.txt"
+				CommandArguments="D:\\pdf\\test\\mswpdf.pdf D:\\pdf\\test\\output.txt"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
