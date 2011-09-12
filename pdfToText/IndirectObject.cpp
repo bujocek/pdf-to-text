@@ -118,7 +118,7 @@ long IndirectObject::getNumber()
 {
 	if(this->isLoaded)
 	{
-    //TODO: consider replacing this code by number object
+    //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=16
 		char * obj = strstr(this->objectString, "obj"); //skip object numbers
 		obj+=3;
 		return strtol(obj,null,0);
@@ -232,7 +232,7 @@ bool IndirectObject::processAsStream()
 					}
 					else
 					{
-						//TODO: Rewrite to enable decoding more filters in stream
+						//TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=10
 						//If filter is not array and is flate decode than decode it
             if(filterObject->objectType == PdfObject::TYPE_NAME && strcmp(((NameObject *) filterObject)->name, "/FlateDecode") == 0)
             {

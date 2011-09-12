@@ -11,7 +11,7 @@ ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
     io->processAsStream();
   }
   
-  //TODO: finish processing the toUnicode Cmap
+  //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=15
   if(this->indirectObject->unencodedStream != null)
   {
     char * stream = this->indirectObject->unencodedStream;

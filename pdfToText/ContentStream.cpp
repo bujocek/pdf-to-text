@@ -67,7 +67,7 @@ wchar_t * ContentStream::getText()
         }
         else
           cerr << "\nCouldn't find font name before 'Tf' oprerator\n";
-        //TODO: move generating current ToUnicode CMap here<<<<<<<<<<<<<<<<<<
+        //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=13<<<<<<<<<<<<<<<<<<<<<<<
       }
       else if(strcmp(operatorObject->name,"Tj") == 0)
       {
@@ -75,7 +75,7 @@ wchar_t * ContentStream::getText()
       }
       else if(strcmp(operatorObject->name,"'") == 0 || strcmp(operatorObject->name,"\"") == 0)
       {
-        //TODO: Maybe we should proces " operator separately and consider moving letters (not that important)
+        //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=12
         wcscat(result, L"\n");
         wcscat(result, this->processStringObject((StringObject*) streamObjectMap[index - 1]));
       }
@@ -98,7 +98,7 @@ wchar_t * ContentStream::getText()
       }
       else if(strcmp(operatorObject->name,"Td") == 0 || strcmp(operatorObject->name,"TD") == 0 || strcmp(operatorObject->name,"TD") == 0)
       {
-        //TODO: Consider using operands in Td and TD operators to set line offset (not that important)
+        //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=12
         wcscat(result, L"\n");
       }
     }
@@ -112,7 +112,7 @@ wchar_t * ContentStream::getText()
   if(logEnabled)
     clog << "\nStream parsed.";
   
-  //TODO: remove used objects to optimize memory usage
+  //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=11
   return result;
 }
 
@@ -129,12 +129,11 @@ wchar_t * charToWchar(char * source)
 wchar_t * convertHexaString(char * string, ToUnicodeCMap * cmap)
 {
   int len = strlen(string);
-  //TODO: Finish converting string using CMap<<<<<<<<<<<
+  //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=14<<<<<<<<<<<
 
   return charToWchar(string);
 }
 
-//TODO: this method has a lot of wishes
 wchar_t * ContentStream::processStringObject(StringObject * stringObject)
 {
   if(stringObject == null)
