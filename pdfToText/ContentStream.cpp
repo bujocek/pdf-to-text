@@ -61,13 +61,22 @@ wchar_t * ContentStream::getText()
               this->currentFont = (DictionaryObject*)((IndirectObject*)font)->getFirstObject();
             if(this->currentFont == null)
               cerr << "\nCouldn't get font specified by name before 'Tf' oprerator\n";
+            else //try to get /ToUnicode map
+            {
+              PdfObject * tucm = null;
+              this->currentCMap = null;
+              tucm = this->currentFont->getObject("/ToUnicode");
+              if(tucm != null && tucm->objectType == PdfObject::TYPE_INDIRECT_OBJECT)
+              {
+                this->currentCMap = new ToUnicodeCMap((IndirectObject*)tucm);
+              }
+            }
           }
           else
             cerr << "\nCouldn't use font specified by name before 'Tf' oprerator because of missing fonts.\n";
         }
         else
           cerr << "\nCouldn't find font name before 'Tf' oprerator\n";
-        //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=13<<<<<<<<<<<<<<<<<<<<<<<
       }
       else if(strcmp(operatorObject->name,"Tj") == 0)
       {
@@ -141,27 +150,18 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
     cerr << "\nContentStream: Can't proces null object in processStringObject method. Something went wrong.\n";
     return null;
   }
-  PdfObject * tucm = null;
-  ToUnicodeCMap * toUnicodeMap = null;
-  //try to get /ToUnicode map
-  if(this->currentFont != null)
-  {
-    tucm = this->currentFont->getObject("/ToUnicode");
-    if(tucm != null && tucm->objectType == PdfObject::TYPE_INDIRECT_OBJECT)
-    {
-      toUnicodeMap = new ToUnicodeCMap((IndirectObject*)tucm);
-    }
-  }
-  else
-    cerr << "\nContentStream: No Current Font defined which is needed for proper string processing.\n";
-
+  
   if(stringObject->isHexa)
   {
-    if(toUnicodeMap != null)
+    if(this->currentCMap != null)
     {
-      return convertHexaString(stringObject->string, toUnicodeMap);
+      return convertHexaString(stringObject->string, this->currentCMap);
     }
-    return L"|-- Unknown string --|"; //charToWchar(stringObject->string);
+    else
+    {
+      cerr << "\nContentStream: No ToUnicode map found for decoding string.\n";
+      return L"|-- Unknown string --|";
+    }
   }
   else
   {

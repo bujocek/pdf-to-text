@@ -16,6 +16,7 @@ class ContentStream :
 {
 private:
   DictionaryObject * currentFont;
+  ToUnicodeCMap * currentCMap;
   wchar_t * textFromContent;
 
   
