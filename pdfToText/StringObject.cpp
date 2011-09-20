@@ -5,6 +5,9 @@ StringObject::StringObject(char ** endKey, char * source)
 {
   this->objectType = PdfObject::TYPE_STRING;
   this->numVal = -1;
+  this->byteString = null;
+  this->byteStringLen = 0;
+  this->length = 0;
   source = StringUtils::skipWhiteSpace(source);
   if(*source == '<')
   {
@@ -17,10 +20,10 @@ StringObject::StringObject(char ** endKey, char * source)
     else
     {
       source += 1;
-      int len = *endKey - source;
-      this->string = new char[len + 1];
-      strncpy(this->string, source, len);
-      this->string[len] = 0;
+      this->length = *endKey - source;
+      this->string = new char[this->length + 1];
+      strncpy(this->string, source, this->length);
+      this->string[this->length] = 0;
       this->isHexa = true;
       *endKey += 1;
     }
@@ -41,10 +44,10 @@ StringObject::StringObject(char ** endKey, char * source)
     else
     {
       source += 1;
-      int len = *endKey - source;
-      this->string = new char[len + 1];
-      strncpy(this->string, source, len);
-      this->string[len] = 0;
+      this->length = *endKey - source;
+      this->string = new char[this->length + 1];
+      strncpy(this->string, source, this->length);
+      this->string[this->length] = 0;
       this->isHexa = false;
       *endKey += 1;
     }
@@ -59,7 +62,7 @@ StringObject::~StringObject(void)
 {
 }
 
-int hexachartoint(char hexa)
+unsigned char hexachartochar(char hexa)
 {
   switch(hexa)
   {
@@ -116,11 +119,30 @@ int StringObject::toNum()
     int result = 0;
     for(int i = len-1; i >= 0; i--)
     {
-      result += hexachartoint(this->string[i]) * pow;
+      result += hexachartochar(this->string[i]) * pow;
       pow = pow*16;
     }
     this->numVal = result;
     return result;
   }
   return 0;
+}
+
+unsigned char * StringObject::getByteString()
+{
+  if(!this->isHexa)
+    return null;
+  this->byteStringLen = this->length/2 + this->length%2;
+  this->byteString = new unsigned char[this->byteStringLen];
+  char c1,c2;
+  for(int i = 0; i<this->byteStringLen; i++)
+  {
+    c1 = this->string[i*2];
+    if(i*2+1 < this->length)
+      c2 = this->string[i*2+1];
+    else
+      c2 = '0';
+    this->byteString[i] = hexachartochar(c1)*16+hexachartochar(c2);
+  }
+  return this->byteString;
 }

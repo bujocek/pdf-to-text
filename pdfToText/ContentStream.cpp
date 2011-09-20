@@ -319,7 +319,7 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
 /**
 helper function for hexaStringToCString
 */
-char hexaCharToChar(char h1, char h2)
+char hexaDoubleCharToChar(char h1, char h2)
 {
 	char hexa[3];
 	hexa[0] = h1;
@@ -335,9 +335,9 @@ char * ContentStream::hexaStringToCString(char * source, int length)
 	for(int i=0; i<length; i+=2)
 	{
 		if(i+1 >= length)
-			newString[i/2] = hexaCharToChar(source[i], '0'); //add '0' char at the end if it is not even count of chars
+			newString[i/2] = hexaDoubleCharToChar(source[i], '0'); //add '0' char at the end if it is not even count of chars
 		else
-			newString[i/2] = hexaCharToChar(source[i], source[i+1]);
+			newString[i/2] = hexaDoubleCharToChar(source[i], source[i+1]);
 	}
 	newString[length/2] = 0;
 	return newString;
