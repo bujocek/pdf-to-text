@@ -135,11 +135,15 @@ wchar_t * charToWchar(char * source)
   return wcstring;
 }
 
-wchar_t * convertHexaString(char * string, ToUnicodeCMap * cmap)
+wchar_t * convertHexaString(StringObject * string, ToUnicodeCMap * cmap)
 {
-  int len = strlen(string);
   //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=14<<<<<<<<<<<
-
+  char * charCode = null;
+  
+  //get charcode
+  //map charcode
+  //convert from UTF-16BE to wchar (unicode)
+  //push to result
   return charToWchar(string);
 }
 
@@ -155,7 +159,7 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
   {
     if(this->currentCMap != null)
     {
-      return convertHexaString(stringObject->string, this->currentCMap);
+      return convertHexaString(stringObject, this->currentCMap);
     }
     else
     {

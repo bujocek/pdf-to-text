@@ -26,6 +26,7 @@ StringObject::StringObject(char ** endKey, char * source)
       this->string[this->length] = 0;
       this->isHexa = true;
       *endKey += 1;
+      this->byteStringLen = this->length/2 + this->length%2;
     }
   }
   else if(*source == '(')
@@ -132,17 +133,19 @@ unsigned char * StringObject::getByteString()
 {
   if(!this->isHexa)
     return null;
-  this->byteStringLen = this->length/2 + this->length%2;
-  this->byteString = new unsigned char[this->byteStringLen];
-  char c1,c2;
-  for(int i = 0; i<this->byteStringLen; i++)
+  if(this->byteString == null)
   {
-    c1 = this->string[i*2];
-    if(i*2+1 < this->length)
-      c2 = this->string[i*2+1];
-    else
-      c2 = '0';
-    this->byteString[i] = hexachartochar(c1)*16+hexachartochar(c2);
+    this->byteString = new unsigned char[this->byteStringLen];
+    char c1,c2;
+    for(int i = 0; i<this->byteStringLen; i++)
+    {
+      c1 = this->string[i*2];
+      if(i*2+1 < this->length)
+        c2 = this->string[i*2+1];
+      else
+        c2 = '0';
+      this->byteString[i] = hexachartochar(c1)*16+hexachartochar(c2);
+    }
   }
   return this->byteString;
 }

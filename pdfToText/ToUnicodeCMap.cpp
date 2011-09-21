@@ -24,10 +24,7 @@ ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
       StringObject * codeTo = new StringObject(&bcsr, bcsr);
       if(codeFrom->isHexa && codeTo->isHexa)
       {
-        codeRanges.push_front(make_pair(codeFrom->toNum(), codeTo->toNum()));
-        //>>>for testing - use these byte strings to continue parsing
-        codeFrom->getByteString();
-        codeTo->getByteString();
+        codeRanges.push_front(make_pair(codeFrom, codeTo));
       }
       else
       {

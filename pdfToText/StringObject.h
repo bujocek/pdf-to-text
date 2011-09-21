@@ -15,5 +15,8 @@ public:
   StringObject(char ** endKey, char * source);
   ~StringObject(void);
   int toNum();
+  /**
+  returns this hexa string converted to bytes
+  */
   unsigned char * getByteString();
 };
