@@ -58,3 +58,9 @@ ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
 ToUnicodeCMap::~ToUnicodeCMap(void)
 {
 }
+
+bool ToUnicodeCMap::isCharCode(char * charCode, int len)
+{
+  //TODO: implement isCharCode (Issue 17)
+  return true;
+}

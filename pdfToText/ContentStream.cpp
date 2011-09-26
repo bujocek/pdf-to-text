@@ -137,14 +137,31 @@ wchar_t * charToWchar(char * source)
 
 wchar_t * convertHexaString(StringObject * string, ToUnicodeCMap * cmap)
 {
-  //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=14<<<<<<<<<<<
-  char * charCode = null;
-  
-  //get charcode
-  //map charcode
-  //convert from UTF-16BE to wchar (unicode)
-  //push to result
-  return charToWchar(string);
+  //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=14
+  int maxCharSize = 4;
+  char * charCode = new char[maxCharSize];
+  char * result = null;
+  int pos,i;
+  i=0;
+  for (pos=0;pos<string->byteStringLen;pos++)
+  {
+    //get charcode
+    charCode[i] = string->getByteString()[pos];
+    i++;
+    if(cmap->isCharCode(charCode, i))
+    {
+      //map charcode
+      
+      //convert from UTF-16BE to wchar (unicode)
+    }
+    if(i>= maxCharSize)
+    {
+      cerr << "\nContentStream: Problem with determining char codes in string.\n";
+      return result;
+    }
+  }
+  //push to result  
+  return charToWchar(string->string);
 }
 
 wchar_t * ContentStream::processStringObject(StringObject * stringObject)

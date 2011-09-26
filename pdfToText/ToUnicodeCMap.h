@@ -11,6 +11,7 @@ private:
 public:
   list <pair<StringObject*, StringObject*>> codeRanges;
   map<int, StringObject *> codeCharMap;
+  bool isCharCode(char * charCode, int len);
   ToUnicodeCMap(IndirectObject * io);
   ~ToUnicodeCMap(void);
 };
