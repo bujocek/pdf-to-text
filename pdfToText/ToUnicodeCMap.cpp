@@ -41,7 +41,7 @@ ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
       bcsr = StringUtils::skipWhiteSpace(bcsr);
     }while(*bcsr == '<');
     
-    codeRanges.sort(compareRangeLen); //TODO: check it
+    codeRanges.sort(compareRangeLen); //sorting not checked for proper functionality
 
     char * bbfc = strstr(stream, "beginbfchar");
     if(bbfc != null)
@@ -89,4 +89,10 @@ bool ToUnicodeCMap::isCharCode(unsigned char * charCode, int len)
     }
   }
   return false;
+}
+
+StringObject * ToUnicodeCMap::getUTFChar(unsigned char * charCode, int len)
+{
+  //TODO: Issue 18
+  return null;
 }

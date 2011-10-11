@@ -150,7 +150,8 @@ wchar_t * convertHexaString(StringObject * string, ToUnicodeCMap * cmap)
     i++;
     if(cmap->isCharCode(charCode, i))
     {
-      //map charcode
+      //map charcode and return string object
+      StringObject * stringCharCode = cmap->getUTFChar(charCode, i);
       //convert from UTF-16BE to wchar (unicode)
       i=0;
     }

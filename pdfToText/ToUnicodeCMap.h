@@ -15,6 +15,7 @@ public:
   checks using code ranges of the map if charCode byte sequence of len length is proper char code
   */
   bool isCharCode(unsigned char * charCode, int len);
+  StringObject * getUTFChar(unsigned char * charCode, int len);
   ToUnicodeCMap(IndirectObject * io);
   ~ToUnicodeCMap(void);
 };

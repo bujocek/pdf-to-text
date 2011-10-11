@@ -23,7 +23,6 @@ NumberObject::~NumberObject(void)
 
 bool NumberObject::canBeNumber(char * source)
 {
-  float n;
   if(((*source) >= '0' && (*source) <= '9') || (*source) == '-' || (*source) == '+')
     return true;
   return false;
