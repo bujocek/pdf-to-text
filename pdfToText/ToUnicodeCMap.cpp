@@ -1,6 +1,13 @@
 #include "StdAfx.h"
 #include "ToUnicodeCMap.h"
 
+bool compareRangeLen(pair<StringObject*, StringObject*> p1, pair<StringObject*, StringObject*> p2)
+{
+  if(p1.first->length < p2.first->length)
+    return true;
+  return false;
+}
+
 ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
 {
   this->indirectObject = io;
@@ -33,6 +40,8 @@ ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
       }
       bcsr = StringUtils::skipWhiteSpace(bcsr);
     }while(*bcsr == '<');
+    
+    codeRanges.sort(compareRangeLen); //TODO: check it
 
     char * bbfc = strstr(stream, "beginbfchar");
     if(bbfc != null)
@@ -59,8 +68,25 @@ ToUnicodeCMap::~ToUnicodeCMap(void)
 {
 }
 
-bool ToUnicodeCMap::isCharCode(char * charCode, int len)
+bool ToUnicodeCMap::isCharCode(unsigned char * charCode, int len)
 {
-  //TODO: implement isCharCode (Issue 17)
-  return true;
+  list <pair<StringObject*, StringObject*>>::iterator cri = this->codeRanges.begin();
+  for ( ;cri != this->codeRanges.end(); cri++)
+  {
+    if(cri->first->byteStringLen == len)
+    {
+      bool isInRange = true;
+      for (int i=0; i<len; i++)
+      {
+        if(charCode[i] < cri->first->getByteString()[i] || charCode[i] > cri->second->getByteString()[i])
+        {
+          isInRange = false;
+          break;
+        }
+      }
+      if(isInRange)
+        return true;
+    }
+  }
+  return false;
 }

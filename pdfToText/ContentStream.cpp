@@ -139,8 +139,8 @@ wchar_t * convertHexaString(StringObject * string, ToUnicodeCMap * cmap)
 {
   //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=14
   int maxCharSize = 4;
-  char * charCode = new char[maxCharSize];
-  char * result = null;
+  unsigned char * charCode = new unsigned char[maxCharSize];
+  wchar_t * result = null;
   int pos,i;
   i=0;
   for (pos=0;pos<string->byteStringLen;pos++)
@@ -151,13 +151,13 @@ wchar_t * convertHexaString(StringObject * string, ToUnicodeCMap * cmap)
     if(cmap->isCharCode(charCode, i))
     {
       //map charcode
-      
       //convert from UTF-16BE to wchar (unicode)
+      i=0;
     }
     if(i>= maxCharSize)
     {
       cerr << "\nContentStream: Problem with determining char codes in string.\n";
-      return result;
+      return L"";
     }
   }
   //push to result  
