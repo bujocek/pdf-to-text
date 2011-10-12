@@ -120,7 +120,6 @@ wchar_t * ContentStream::getText()
   this->textFromContent = result;
   if(logEnabled)
     clog << "\nStream parsed.";
-  
   //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=11
   return result;
 }
@@ -141,7 +140,9 @@ wchar_t * convertHexaString(StringObject * string, ToUnicodeCMap * cmap)
   int maxCharSize = 4;
   unsigned char * charCode = new unsigned char[maxCharSize];
   wchar_t * result = null;
-  int pos,i;
+  wchar_t* newbytes = new wchar_t[string->byteStringLen];
+  int pos,i,currentLen;
+  currentLen = 0;
   i=0;
   for (pos=0;pos<string->byteStringLen;pos++)
   {
@@ -153,6 +154,15 @@ wchar_t * convertHexaString(StringObject * string, ToUnicodeCMap * cmap)
       //map charcode and return string object
       StringObject * stringCharCode = cmap->getUTFChar(charCode, i);
       //convert from UTF-16BE to wchar (unicode)
+      wchar_t* bytes = reinterpret_cast<wchar_t*>(stringCharCode->getByteString());
+      int len = stringCharCode->byteStringLen/2;
+      int j = 0;
+      for(; j < len; j++)
+      {
+        wchar_t x = ((bytes[j] & 0xff) << 8 ) | (bytes[j] >> 8 );
+        newbytes[currentLen + j] = x;
+      }
+      currentLen += j;
       i=0;
     }
     if(i>= maxCharSize)
@@ -161,8 +171,12 @@ wchar_t * convertHexaString(StringObject * string, ToUnicodeCMap * cmap)
       return L"";
     }
   }
-  //push to result  
-  return charToWchar(string->string);
+  //push to result
+  result = new wchar_t[currentLen+1];
+  wcsncpy(result, newbytes, currentLen);
+  delete[] newbytes;
+  result[currentLen] = L'\0';  
+  return result;
 }
 
 wchar_t * ContentStream::processStringObject(StringObject * stringObject)

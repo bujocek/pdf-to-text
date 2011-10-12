@@ -93,6 +93,17 @@ bool ToUnicodeCMap::isCharCode(unsigned char * charCode, int len)
 
 StringObject * ToUnicodeCMap::getUTFChar(unsigned char * charCode, int len)
 {
-  //TODO: Issue 18
-  return null;
+  int charCodeNum = 0;
+  for(int i = 0; i<len; i++)
+  {
+    charCodeNum *= 16;
+    charCodeNum += charCode[i];
+  }
+  StringObject * utfChar = codeCharMap[charCodeNum];
+  if(utfChar == null)
+  {
+    cerr << "\nCouldn't map character properly.\n";
+    return null;
+  }
+  return utfChar;
 }

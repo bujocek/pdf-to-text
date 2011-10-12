@@ -115,13 +115,12 @@ int StringObject::toNum()
     return numVal;
   if(this->isHexa)
   {
-    int len = strlen(this->string);
-    int pow = 1;
     int result = 0;
-    for(int i = len-1; i >= 0; i--)
+    int len = this->byteStringLen;
+    for(int i = 0; i<len; i++)
     {
-      result += hexachartochar(this->string[i]) * pow;
-      pow = pow*16;
+      result *= 16;
+      result += this->getByteString()[i];
     }
     this->numVal = result;
     return result;

@@ -79,14 +79,13 @@ int main(int argc, char* argv[])
 	//Discard existing output:
 	if(logEnabled)
 		clog << "\nOpening output file " << outputFilePath;
-	wofstream fileo (outputFilePath, ios::trunc);
-	if (!fileo.is_open() || !fileo.good())
+  FILE * fileo = fopen( outputFilePath, "wb");
+	if (fileo == null)
 	{
 		cerr << "\npdfToText: Could not open output file";
 		end();
 		return 2; //files couldnt be opened
 	}
-	fileo.clear();
 
 	//-----------------------------------------------
 	//---- Read reference table and find objects ----

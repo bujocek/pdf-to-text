@@ -74,7 +74,7 @@ public:
   /**
   method that writes page text to the output file
   */
-  void getText(wofstream& file);
+  void getText(FILE * file);
 
   PageTreeNode(DictionaryObject * nodeDictionary);
   ~PageTreeNode(void);
