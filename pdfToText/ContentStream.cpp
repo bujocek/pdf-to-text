@@ -1,6 +1,15 @@
 #include "StdAfx.h"
 #include "ContentStream.h"
 
+#ifdef _WIN32
+#define NEWLINE L"\r\n" // windows
+#elif __APPLE__
+#define NEWLINE L"\r" // mac
+#else
+#define NEWLINE L"\n" //u**x
+#endif
+
+
 ContentStream::ContentStream(IndirectObject * io, PageTreeNode * page)
 {
   this->objectType = PdfObject::TYPE_CONTENT_STREAM;
@@ -85,7 +94,7 @@ wchar_t * ContentStream::getText()
       else if(strcmp(operatorObject->name,"'") == 0 || strcmp(operatorObject->name,"\"") == 0)
       {
         //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=12
-        wcscat(result, L"\n");
+        wcscat(result, NEWLINE);
         wcscat(result, this->processStringObject((StringObject*) streamObjectMap[index - 1]));
       }
       else if(strcmp(operatorObject->name,"TJ") == 0)
@@ -108,7 +117,7 @@ wchar_t * ContentStream::getText()
       else if(strcmp(operatorObject->name,"Td") == 0 || strcmp(operatorObject->name,"TD") == 0 || strcmp(operatorObject->name,"TD") == 0)
       {
         //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=12
-        wcscat(result, L"\n");
+        wcscat(result, NEWLINE);
       }
     }
 
