@@ -74,16 +74,12 @@ long XRef::findNextXRef()
 	file->seekg (XRefTrailerIndex); 
 	file->read(memBlock, memBlockSize);
 	trailerDictionary = new DictionaryObject(null, memBlock+7); //this mishmash with number 7 is to skip "trailer" key word
-  //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=1
-	char* trailerBegin = strstr(memBlock, "<<");
-	char* trailerEnd = strstr(memBlock, ">>");
-	char* prevKey = strstr(memBlock, "Prev");
-	if(prevKey != NULL && trailerBegin != NULL && trailerEnd != NULL && 
-		trailerBegin < prevKey && prevKey < trailerEnd)
-	{
-		prevKey += 5;
-		return strtol(prevKey, &trailerEnd, 10);;
-	}
+  PdfObject * previousXRef = trailerDictionary->getObject("/Prev");
+  if(previousXRef != null &&
+    previousXRef->objectType == PdfObject::TYPE_NUMBER)
+  {
+    return (long)((NumberObject*)previousXRef)->number;
+  }
 	else
 	{
 		return -1;
