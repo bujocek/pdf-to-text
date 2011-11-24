@@ -11,13 +11,17 @@ ArrayObject::ArrayObject(char ** endKey, char * source)
   if(*source == '[')
   {
     source += 1; //move after array bracket
-    do
+    source = StringUtils::skipWhiteSpace(source);
+    if(*source != ']')
     {
-      value = PdfObject::readValue(endKey, source);
-      this->objectList.push_back(value);
-      source = *endKey;
-      source = StringUtils::skipWhiteSpace(source);
-    }while(value != null && *source != ']');
+      do
+      {
+        value = PdfObject::readValue(endKey, source);
+        this->objectList.push_back(value);
+        source = *endKey;
+        source = StringUtils::skipWhiteSpace(source);
+      }while(value != null && *source != ']');
+    }
     *endKey = source + 1;
   }
   else
