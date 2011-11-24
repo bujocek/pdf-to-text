@@ -4,7 +4,7 @@
 IndirectObjectRefference::IndirectObjectRefference(char ** endKey, char * source)
 {
   this->objectType = PdfObject::TYPE_INDIRECT_OBJECT_REFFERENCE;
-
+  this->source = source;
   this->objectNumber = 0;
   this->generationNumber = 0;
   int len = 0;

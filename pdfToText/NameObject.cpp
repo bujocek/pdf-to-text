@@ -22,6 +22,7 @@ NameObject * NameObject::getNameObject(char ** endKey, char * source)
 NameObject::NameObject(char ** endKey, char * source)
 {
   this->objectType = PdfObject::TYPE_NAME;
+  this->source = source;
   if(source == NULL)
   {
     this->name = NULL;

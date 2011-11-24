@@ -8,6 +8,13 @@ bool compareRangeLen(pair<StringObject*, StringObject*> p1, pair<StringObject*, 
   return false;
 }
 
+bool compareBFRanges(bfrange x, bfrange y)
+{
+  if(x.begin < y.begin)
+    return true;
+  return false;
+}
+
 ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
 {
   this->indirectObject = io;
@@ -40,26 +47,49 @@ ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
       }
       bcsr = StringUtils::skipWhiteSpace(bcsr);
     }while(*bcsr == '<');
-    
-    codeRanges.sort(compareRangeLen); //sorting not checked for proper functionality
+    codeRanges.sort(compareRangeLen);
 
     char * bbfc = strstr(stream, "beginbfchar");
-    if(bbfc != null)
+    while(bbfc != null)
     {
       bbfc += 11; //skip 'beginbfchar' keyword
       do
       {
-        StringObject * code = new StringObject(&bbfc, bbfc);
+        StringObject code = StringObject(&bbfc, bbfc);
         StringObject * utfString = new StringObject(&bbfc, bbfc);
-        if(code->isHexa)
-          codeCharMap[code->toNum()] = utfString;
+        if(code.isHexa)
+          codeCharMap[code.toNum()] = utfString;
         bbfc = StringUtils::skipWhiteSpace(bbfc);
       }while(*bbfc == '<');
+      bbfc = strstr(bbfc, "beginbfchar");
     }
+    
+    list<bfrange> rangeMapList;
     bbfc = strstr(stream, "beginbfrange");
-    if(bbfc != null)
+    while(bbfc != null)
     {
-      cerr<<"\nToUnicodeCMap: Not Implemented - CMap defined in code ranges.\n";
+      bbfc += 12;
+      int i = 0;
+      do
+      {
+        StringObject beginCode = StringObject(&bbfc, bbfc);
+        StringObject endCode = StringObject(&bbfc, bbfc);
+        PdfObject * objectForRange = PdfObject::readValue(&bbfc, bbfc, false);
+        BFRange bfr = BFRange();
+        bfr.begin = beginCode.toNum();
+        bfr.end = endCode.toNum();
+        bfr.object = objectForRange;
+        rangeMapList.push_front(bfr);
+        bbfc = StringUtils::skipWhiteSpace(bbfc);
+      }while(*bbfc == '<');
+      bbfc = strstr(bbfc, "beginbfrange");
+    }
+    rangeMapList.sort(compareBFRanges);
+
+    while(!rangeMapList.empty())
+    {
+      codeRangeMapVector.push_back(rangeMapList.front());
+      rangeMapList.pop_front();
     }
   }
 }
@@ -102,8 +132,122 @@ StringObject * ToUnicodeCMap::getUTFChar(unsigned char * charCode, int len)
   StringObject * utfChar = codeCharMap[charCodeNum];
   if(utfChar == null)
   {
-    cerr << "\nCouldn't map character properly.\n";
-    return null;
+    //try to find range for char
+    BFRange * range = null;
+    int endSearch = codeRangeMapVector.size();
+    if(endSearch > 0)
+    {
+      int beginSearch = 0;
+      do
+      {
+        int actualSearch = (beginSearch + endSearch) / 2;
+        BFRange * actualItem = &codeRangeMapVector[actualSearch];
+        if(actualItem->begin <= charCodeNum &&
+          actualItem->end >= charCodeNum)
+        {
+          range = actualItem;
+          break;
+        }
+        if(actualItem->begin > charCodeNum)
+        {
+          endSearch = actualSearch-1;
+        }
+        else
+        {
+          beginSearch = actualSearch+1;
+        }
+      }while(beginSearch <= endSearch);
+    }
+    if(range == null)
+    {
+      cerr << "\nCouldn't map character properly.\n";
+      return null;
+    }
+    else
+    {
+      int increment = charCodeNum - range->begin;
+      if(range->object->objectType == PdfObject::TYPE_STRING)
+      {
+        StringObject * string = (StringObject*) range->object;
+        int numResult = string->toNum();
+        numResult += increment;
+        int len = string->byteStringLen*2;
+        char * hexaString = new char[len+3];
+        hexaString[0] = '<';
+        hexaString[len+1] = '>';
+        hexaString[len+2] = 0;
+        for(int i = len; i>0; i--)
+        {
+          int byte = numResult % 16;
+          switch(byte)
+          {
+          case 0: 
+            hexaString[i] = '0';
+            break;
+          case 1: 
+            hexaString[i] = '1';
+            break;
+          case 2: 
+            hexaString[i] = '2';
+            break;
+          case 3: 
+            hexaString[i] = '3';
+            break;
+          case 4: 
+            hexaString[i] = '4';
+            break;
+          case 5: 
+            hexaString[i] = '5';
+            break;
+          case 6: 
+            hexaString[i] = '6';
+            break;
+          case 7: 
+            hexaString[i] = '7';
+            break;
+          case 8: 
+            hexaString[i] = '8';
+            break;
+          case 9: 
+            hexaString[i] = '9';
+            break;
+          case 10: 
+            hexaString[i] = 'A';
+            break;
+          case 11: 
+            hexaString[i] = 'B';
+            break;
+          case 12: 
+            hexaString[i] = 'C';
+            break;
+          case 13: 
+            hexaString[i] = 'D';
+            break;
+          case 14: 
+            hexaString[i] = 'E';
+            break;
+          case 15: 
+            hexaString[i] = 'F';
+            break;
+          }
+          numResult /= 16;
+        }
+        char * _dummy = null;
+        utfChar = new StringObject(&_dummy, hexaString);
+      }
+      else if(range->object->objectType == PdfObject::TYPE_ARRAY)
+      {
+        ArrayObject * utfArray = (ArrayObject*) range->object;
+        utfChar = (StringObject*) utfArray->objectList[increment];
+      }
+      else
+      {
+        cerr << "\nCouldn't find utf value in found range.\n";
+        return null;
+      }
+      // add result to char map - so there is no need to create the string again next time the char is used
+      this->codeCharMap[charCodeNum] = utfChar; 
+    }
   }
   return utfChar;
 }

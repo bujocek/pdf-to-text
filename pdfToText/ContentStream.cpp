@@ -101,8 +101,8 @@ wchar_t * ContentStream::getText()
       {
         if(streamObjectMap[index-1]->objectType == PdfObject::TYPE_ARRAY)
         {
-          list<PdfObject*> objectList = ((ArrayObject*) streamObjectMap[index-1])->objectList;
-          list<PdfObject *>::iterator olIterator = objectList.begin();
+          vector<PdfObject*> objectList = ((ArrayObject*) streamObjectMap[index-1])->objectList;
+          vector<PdfObject *>::iterator olIterator = objectList.begin();
           for(;olIterator != objectList.end(); olIterator++)
           {
             if((*olIterator)->objectType == PdfObject::TYPE_STRING)
@@ -145,7 +145,6 @@ wchar_t * charToWchar(char * source)
 
 wchar_t * convertHexaString(StringObject * string, ToUnicodeCMap * cmap)
 {
-  //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=14
   int maxCharSize = 4;
   unsigned char * charCode = new unsigned char[maxCharSize];
   wchar_t * result = null;
@@ -163,15 +162,18 @@ wchar_t * convertHexaString(StringObject * string, ToUnicodeCMap * cmap)
       //map charcode and return string object
       StringObject * stringCharCode = cmap->getUTFChar(charCode, i);
       //convert from UTF-16BE to wchar (unicode)
-      wchar_t* bytes = reinterpret_cast<wchar_t*>(stringCharCode->getByteString());
-      int len = stringCharCode->byteStringLen/2;
-      int j = 0;
-      for(; j < len; j++)
+      if(stringCharCode != null)
       {
-        wchar_t x = ((bytes[j] & 0xff) << 8 ) | (bytes[j] >> 8 );
-        newbytes[currentLen + j] = x;
+        wchar_t* bytes = reinterpret_cast<wchar_t*>(stringCharCode->getByteString());
+        int len = stringCharCode->byteStringLen/2;
+        int j = 0;
+        for(; j < len; j++)
+        {
+          wchar_t x = ((bytes[j] & 0xff) << 8 ) | (bytes[j] >> 8 );
+          newbytes[currentLen + j] = x;
+        }
+        currentLen += j;
       }
-      currentLen += j;
       i=0;
     }
     if(i>= maxCharSize)
@@ -214,6 +216,37 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
   }
   return null;
 }
+
+////////////
+//OLD CODE//
+////////////
+
+///**
+//helper function for hexaStringToCString
+//*/
+//char hexaDoubleCharToChar(char h1, char h2)
+//{
+//	char hexa[3];
+//	hexa[0] = h1;
+//	hexa[1] = h2;
+//	hexa[2] = 0;
+//	int charCode = strtol(hexa, null, 16);
+//	return charCode;
+//}
+
+//char * ContentStream::hexaStringToCString(char * source, int length)
+//{
+//	char * newString = new char[length/2+1];
+//	for(int i=0; i<length; i+=2)
+//	{
+//		if(i+1 >= length)
+//			newString[i/2] = hexaDoubleCharToChar(source[i], '0'); //add '0' char at the end if it is not even count of chars
+//		else
+//			newString[i/2] = hexaDoubleCharToChar(source[i], source[i+1]);
+//	}
+//	newString[length/2] = 0;
+//	return newString;
+//}
 
 //char * ContentStream::getText2()
 //{
@@ -360,30 +393,3 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
 //	}
 //	return result;
 //}
-
-/**
-helper function for hexaStringToCString
-*/
-char hexaDoubleCharToChar(char h1, char h2)
-{
-	char hexa[3];
-	hexa[0] = h1;
-	hexa[1] = h2;
-	hexa[2] = 0;
-	int charCode = strtol(hexa, null, 16);
-	return charCode;
-}
-
-char * ContentStream::hexaStringToCString(char * source, int length)
-{
-	char * newString = new char[length/2+1];
-	for(int i=0; i<length; i+=2)
-	{
-		if(i+1 >= length)
-			newString[i/2] = hexaDoubleCharToChar(source[i], '0'); //add '0' char at the end if it is not even count of chars
-		else
-			newString[i/2] = hexaDoubleCharToChar(source[i], source[i+1]);
-	}
-	newString[length/2] = 0;
-	return newString;
-}

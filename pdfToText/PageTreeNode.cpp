@@ -39,7 +39,7 @@ list<PageTreeNode *> * PageTreeNode::getKids()
       ArrayObject * ao = (ArrayObject*) po;
       if(ao == null)
         return badQuit();
-      list<PdfObject *>::iterator objectListIterator;
+      vector<PdfObject *>::iterator objectListIterator;
 
       for ( objectListIterator = ao->objectList.begin(); objectListIterator != ao->objectList.end();
 		        objectListIterator++)
@@ -89,8 +89,8 @@ void PageTreeNode::processPage()
   ContentStream * cs;
   if(contents->objectType == PdfObject::TYPE_ARRAY)
   {
-    list<PdfObject*> * objlist = &(((ArrayObject*) contents)->objectList);
-    list<PdfObject*>::iterator oliterator;
+    vector<PdfObject*> * objlist = &(((ArrayObject*) contents)->objectList);
+    vector<PdfObject*>::iterator oliterator;
     for(oliterator = objlist->begin(); oliterator != objlist->end(); oliterator++)
     {
       if((*oliterator)->objectType == PdfObject::TYPE_INDIRECT_OBJECT_REFFERENCE)

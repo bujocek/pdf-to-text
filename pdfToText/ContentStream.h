@@ -19,26 +19,6 @@ private:
   ToUnicodeCMap * currentCMap;
   wchar_t * textFromContent;
 
-  
-  ///**
-  //#DEPRECATED#
-  //An old version of getText - not used any more
-  //*/
-  //char * getText2();
-
-  ///**
-  //#DEPRECATED#
-  //An old version of getting text method - not used any more
-  //retrieves text from textObject found in this pdf object
-  //*/
-  //char * processTextObject(char * textObject);
-	
-	/**
-	converts the hexa string in source to CString
-	creates new string and returns it
-	*/
-	char * hexaStringToCString(char * source, int length);
-
 public:
   IndirectObject * indirectObject;
   PageTreeNode * page;
@@ -54,4 +34,26 @@ public:
   method that processes string object and returns text
   */
   wchar_t * processStringObject(StringObject * stringObject);
+
+
+
+  //private:
+  ///**
+  //#DEPRECATED#
+  //An old version of getText - not used any more
+  //*/
+  //char * getText2();
+
+  ///**
+  //#DEPRECATED#
+  //An old version of getting text method - not used any more
+  //retrieves text from textObject found in this pdf object
+  //*/
+  //char * processTextObject(char * textObject);
+	
+	///**
+	//converts the hexa string in source to CString
+	//creates new string and returns it
+	//*/
+	//char * hexaStringToCString(char * source, int length);
 };

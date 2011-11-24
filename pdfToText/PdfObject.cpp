@@ -12,6 +12,7 @@
 PdfObject::PdfObject(void)
 {
   this->objectType = 0;
+  this->source = null;
 }
 
 PdfObject::~PdfObject(void)

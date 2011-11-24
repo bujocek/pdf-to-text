@@ -6,7 +6,7 @@ class ArrayObject :
   public PdfObject
 {
 public:
-  std::list<PdfObject*> objectList;
+  std::vector<PdfObject*> objectList;
   ArrayObject(char ** endKey, char * source);
   ~ArrayObject(void);
 };

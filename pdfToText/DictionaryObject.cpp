@@ -15,6 +15,7 @@ DictionaryObject::DictionaryObject(char ** endKey, char * source)
   this->dictionaryStringLength = 0;
 
   source = StringUtils::skipWhiteSpace(source);
+  this->source = source;
   if(*source == '<' && *(source+1) == '<')
 	{
     char * actualPos = source;

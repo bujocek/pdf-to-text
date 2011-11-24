@@ -6,6 +6,7 @@ ArrayObject::ArrayObject(char ** endKey, char * source)
   this->objectType = PdfObject::TYPE_ARRAY;
   source = StringUtils::skipWhiteSpace(source);
   PdfObject * value = null;
+  this->source = source;
   this->objectList.clear();
   if(*source == '[')
   {

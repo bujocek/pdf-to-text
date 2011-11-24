@@ -11,6 +11,7 @@ BoolObject::BoolObject(char ** endKey, char * source)
 {
   this->objectType = PdfObject::TYPE_BOOL;
   source = StringUtils::skipWhiteSpace(source);
+  this->source = source;
   if(*source == 't' && *(source+1) == 'r' && *(source+2) == 'u' && *(source+3) == 'e')
   {
     this->boolValue = true;

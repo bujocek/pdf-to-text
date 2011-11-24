@@ -22,6 +22,7 @@ public:
   int objectType;
   PdfObject(void);
   ~PdfObject(void);
+  char * source;
 
   /**
   reads value from source string and returns it as pdf object

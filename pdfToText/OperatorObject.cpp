@@ -5,6 +5,7 @@ OperatorObject::OperatorObject(char ** endKey, char * source)
 {
   this->objectType = PdfObject::TYPE_OPERATOR;
   this->name = new char[4];
+  this->source = source;
   if(isalpha(*source))
   {
     this->name[0] = (*source);

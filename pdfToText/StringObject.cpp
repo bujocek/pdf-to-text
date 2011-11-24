@@ -9,6 +9,7 @@ StringObject::StringObject(char ** endKey, char * source)
   this->byteStringLen = 0;
   this->length = 0;
   source = StringUtils::skipWhiteSpace(source);
+  this->source = source;
   if(*source == '<')
   {
     *endKey = strchr(source,'>');
@@ -51,6 +52,7 @@ StringObject::StringObject(char ** endKey, char * source)
       this->string[this->length] = 0;
       this->isHexa = false;
       *endKey += 1;
+      this->byteStringLen = this->length;
     }
   }
   else
