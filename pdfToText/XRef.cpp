@@ -141,7 +141,19 @@ XRefSubsection * XRef::getXRef()
 		file->clear();
 		file->seekg (XRefIndex);
     StringUtils::fGetLine(memBlock, fileSize - XRefIndex, *file); // skip "xref"
-		XRefSubsection * resultTable = new XRefSubsection [65534];
+    XRefSubsection * resultTable;
+    //check if it is cross refference stream (instead of "xref" there is "x y obj")
+    char * _dummy;
+    PdfObject * firstObject = PdfObject::readValue(&_dummy, memBlock);
+    if(firstObject->objectType == PdfObject::TYPE_NUMBER) //if it is stream
+    {
+      cerr << "\nXRef: Not Implemented - Cross-Refference stream found and wasn't processed.\n";
+      XRefTable = new XRefSubsection [0];
+      return XRefTable;
+      /*resultTable = new XRefSubsection[0];
+      resultTable->count = 0;*/
+    }
+		resultTable = new XRefSubsection [65534];
 		sectionCount = 0;
 		
 		//read cross refference sections
@@ -177,7 +189,6 @@ XRefSubsection * XRef::getXRef()
 	{
 		return NULL;
 	}
-	//	throw new exception("Could not find xref table. Maybe the XRefIndex wasn't set.");
 }
 
 XRef * XRef::getNextXRef()

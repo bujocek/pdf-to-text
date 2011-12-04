@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
   XRef * firstRefTable = refTable;
   if(logEnabled)
     clog<<"\n\nProcessing refference table...";
-	while(refTable != NULL)
+  while(refTable != null && refTable->getXRef() != null)
 	{
 		XRefSubsection * sections = refTable->getXRef();
 		int i,j;
@@ -130,6 +130,13 @@ int main(int argc, char* argv[])
 
   if(logEnabled)
     clog<<"\nFound " << objectMap->size() << " indirect objects.";
+
+  if(objectMap->size() <= 0)
+  {
+    cerr << "\npdfToText: No objects found in reference table.\n";
+    end();
+    return 4;
+  }
 	
 	//----------------------
 	//---- Load objects ----
@@ -152,35 +159,35 @@ int main(int argc, char* argv[])
   //---- Read Page tree ----
   if(logEnabled)
 		clog<< "\n\n-=| Reading Page tree |=-\n";
-  if(firstRefTable == null || firstRefTable->trailerDictionary == null || firstRefTable->trailerDictionary->getObject("/Root") == null)
+  if(firstRefTable == null || firstRefTable->getXRef() == null || firstRefTable->trailerDictionary == null || firstRefTable->trailerDictionary->getObject("/Root") == null)
   {
     cerr<<"\npdfToText: Couldn't find Document Catalog in PDF file.\n";
-    return 3;
     end();
+    return 3;
   }
   IndirectObject * indirectObject = (IndirectObject*) firstRefTable->trailerDictionary->getObject("/Root");
   DictionaryObject * documentCatalogDictionary = (DictionaryObject*) indirectObject->getFirstObject();
   if(documentCatalogDictionary == null || documentCatalogDictionary->objectType != PdfObject::TYPE_DICTIONARY)
   {
     cerr<<"\npdfToText: Problem with reading Document Catalog in PDF file.\n";
-    return 3;
     end();
+    return 3;
   }
   if(logEnabled)
     clog<<"\nDocument catalog found in object "<<indirectObject->objectNumber<<" "<<indirectObject->generationNumber<<" R.";
   if(documentCatalogDictionary->getObject("/Pages") == null)
   {
     cerr<<"\npdfToText: Couldn't find page tree in Document Catalog in PDF file.\n";
-    return 3;
     end();
+    return 3;
   }
   indirectObject = (IndirectObject*) documentCatalogDictionary->getObject("/Pages");
   DictionaryObject * pageTreeRootDictionary = (DictionaryObject*) indirectObject->getFirstObject();
   if(pageTreeRootDictionary == null || pageTreeRootDictionary->objectType != PdfObject::TYPE_DICTIONARY)
   {
     cerr<<"\npdfToText: Problem with reading Page Tree root node dictionary in PDF file.\n";
-    return 3;
     end();
+    return 3;
   }
   if(logEnabled)
     clog<<"\nPage tree root node dictionary found in object "<<indirectObject->objectNumber<<" "<<indirectObject->generationNumber<<" R.";
@@ -209,8 +216,8 @@ int main(int argc, char* argv[])
   else
   {
     cerr<<"\nNo pages found in a page tree. Nothing to extract.\n";
-    return 3;
     end();
+    return 3;
   }
   
   //-------------------------------
