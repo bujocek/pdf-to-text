@@ -33,10 +33,16 @@ StringObject::StringObject(char ** endKey, char * source)
   else if(*source == '(')
   {
     *endKey = source;
-    do //search for closing parantheses and check if there isn't backslash char before
+    //search for closing parantheses and check if there isn't backslash char before
+    int level = 0;
+    do
     {
-      *endKey = strchr(*endKey+1,')');
-    }while(*((*endKey)-1) == '\\' && *endKey != null);
+      *endKey = *endKey + 1;
+      if( **endKey == '(' && *((*endKey)-1) != '\\')
+        level++;
+      if( **endKey == ')' && *((*endKey)-1) != '\\')
+        level--;
+    }while(level > 0 || ! ( **endKey == ')' && *((*endKey)-1) != '\\'));
 
     if(*endKey == null)
     {

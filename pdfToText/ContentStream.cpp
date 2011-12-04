@@ -27,10 +27,15 @@ ContentStream::~ContentStream(void)
 {
 }
 
-wchar_t * ContentStream::getText()
+wchar_t * ContentStream::getText( ContentStream * prevStream)
 {
   if(this->textFromContent != null)
     return this->textFromContent;
+  if(this->indirectObject->unencodedStream == null)
+  {
+    cerr << "\nContentStream: Stream wasn't processed - nothing to extract text from.\n";
+    return null;
+  }
   DictionaryObject * fonts = this->page->getFonts();
   this->currentFont = null;
   wchar_t * result = new wchar_t[this->indirectObject->unencodedStreamSize * sizeof(wchar_t)]; //assuming that the result string will not be bigger than whole stream
@@ -44,7 +49,6 @@ wchar_t * ContentStream::getText()
 
   char * source = usingString;
   char ** endKey = &source;
-  map<int,PdfObject*> streamObjectMap;
   source = StringUtils::skipWhiteSpace(source);
   int index = 0;
   PdfObject * value;
@@ -58,12 +62,24 @@ wchar_t * ContentStream::getText()
       OperatorObject * operatorObject = (OperatorObject*)value;
       if(strcmp(operatorObject->name,"Tf") == 0)
       {
-        if(streamObjectMap[index-2]->objectType == PdfObject::TYPE_NAME)
+        PdfObject * nameObject;
+        if(index >= 2)
+          nameObject = streamObjectMap[index-2];
+        else if(prevStream != null && prevStream->streamObjectMap.size() >= 2-index)
+        {
+          nameObject = prevStream->streamObjectMap[prevStream->streamObjectMap.size() - 3 + index];
+        }
+        else
+        {
+          cerr << "\nContentStream: Problem with determining operands between two content streams.\n";
+          break;
+        }
+        if(nameObject != null && nameObject->objectType == PdfObject::TYPE_NAME)
         {
           this->currentFont = null;
           if(fonts != null)
           {
-            PdfObject * font = fonts->getObject(((NameObject*)streamObjectMap[index-2])->name);
+            PdfObject * font = fonts->getObject(((NameObject*)nameObject)->name);
             if(font != null && font->objectType == PdfObject::TYPE_DICTIONARY)
               this->currentFont = (DictionaryObject*)font;
             if(font != null && font->objectType == PdfObject::TYPE_INDIRECT_OBJECT)
@@ -82,26 +98,77 @@ wchar_t * ContentStream::getText()
             }
           }
           else
-            cerr << "\nCouldn't use font specified by name before 'Tf' oprerator because of missing fonts.\n";
+          {
+            cerr << "\nContentStream: Couldn't use font specified by name before 'Tf' oprerator because of missing fonts.\n";
+            break;
+          }
         }
         else
-          cerr << "\nCouldn't find font name before 'Tf' oprerator\n";
+        {
+          cerr << "\nContentStream: Couldn't find font name before 'Tf' oprerator\n";
+          break;
+        }
       }
       else if(strcmp(operatorObject->name,"Tj") == 0)
       {
-        wcscat(result, this->processStringObject((StringObject*) streamObjectMap[index - 1]));
+        PdfObject * stringObject;
+        if(index >= 1)
+          stringObject = streamObjectMap[index-1];
+        else if(prevStream != null && prevStream->streamObjectMap.size() >= 1-index)
+        {
+          stringObject = prevStream->streamObjectMap[prevStream->streamObjectMap.size() - 2 + index];
+        }
+        else
+        {
+          cerr << "\nContentStream: Problem with determining operands between two content streams.\n";
+          break;
+        }
+        if(stringObject == null)
+        {
+          cerr << "\nContentStream: Couldn't find string before Tj operator.\n";
+          break;
+        }
+        wcscat(result, this->processStringObject((StringObject*) stringObject));
       }
       else if(strcmp(operatorObject->name,"'") == 0 || strcmp(operatorObject->name,"\"") == 0)
       {
-        //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=12
         wcscat(result, NEWLINE);
-        wcscat(result, this->processStringObject((StringObject*) streamObjectMap[index - 1]));
+        PdfObject * stringObject;
+        if(index >= 1)
+          stringObject = streamObjectMap[index-1];
+        else if(prevStream != null && prevStream->streamObjectMap.size() >= 1-index)
+        {
+          stringObject = prevStream->streamObjectMap[prevStream->streamObjectMap.size() - 2 + index];
+        }
+        else
+        {
+          cerr << "\nContentStream: Problem with determining operands between two content streams.\n";
+          break;
+        }
+        if(stringObject == null)
+        {
+          cerr << "\nContentStream: Couldn't find string before ' or \" operator.\n";
+          break;
+        }
+        wcscat(result, this->processStringObject((StringObject*) stringObject));
       }
       else if(strcmp(operatorObject->name,"TJ") == 0)
       {
-        if(streamObjectMap[index-1]->objectType == PdfObject::TYPE_ARRAY)
+        PdfObject * arrayObject;
+        if(index >= 1)
+          arrayObject = streamObjectMap[index-1];
+        else if(prevStream != null && prevStream->streamObjectMap.size() >= 1-index)
         {
-          vector<PdfObject*> objectList = ((ArrayObject*) streamObjectMap[index-1])->objectList;
+          arrayObject = prevStream->streamObjectMap[prevStream->streamObjectMap.size() - 2 + index];
+        }
+        else
+        {
+          cerr << "\nContentStream: Problem with determining operands between two content streams.\n";
+          break;
+        }
+        if(arrayObject != null && arrayObject->objectType == PdfObject::TYPE_ARRAY)
+        {
+          vector<PdfObject*> objectList = ((ArrayObject*) arrayObject)->objectList;
           vector<PdfObject *>::iterator olIterator = objectList.begin();
           for(;olIterator != objectList.end(); olIterator++)
           {
@@ -112,11 +179,11 @@ wchar_t * ContentStream::getText()
         else
         {
           cerr << "\nContentStream: Couldn't find an array before 'TJ' operator.\n";
+          break;
         }
       }
       else if(strcmp(operatorObject->name,"Td") == 0 || strcmp(operatorObject->name,"TD") == 0 || strcmp(operatorObject->name,"TD") == 0)
       {
-        //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=12
         wcscat(result, NEWLINE);
       }
     }
@@ -129,7 +196,6 @@ wchar_t * ContentStream::getText()
   this->textFromContent = result;
   if(logEnabled)
     clog << "\nStream parsed.";
-  //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=11
   return result;
 }
 

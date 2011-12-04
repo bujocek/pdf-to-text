@@ -193,7 +193,7 @@ bool IndirectObject::processAsStream()
           if(lengthObject == null)
 					{
 						cerr << "\nIndirectObject: Couldn't find stream length in dictionary of object " << this->objectNumber <<
-							". \nSkipping this invalid pdf stream object.";
+							". \nSkipping this invalid pdf stream object.\n";
 						return false;
 					}
           long lengthNumber = -1;
@@ -207,11 +207,12 @@ bool IndirectObject::processAsStream()
 						lengthNumber = po->getNumber();
 						if(lengthNumber == 0)
 						{
-              cerr << "\nIndirectObject: Couldn't get indirect length parameter for stream in object" << this->objectNumber <<".";
+              cerr << "\nIndirectObject: Couldn't get indirect length parameter for stream in object\n" << this->objectNumber <<".";
 							return false;
 						}
 					}
-					if(lengthNumber != (endstreamString - streamString)) // just for sure that pointers and length match
+					if(lengthNumber < (endstreamString - streamString)-1 ||
+            lengthNumber > (endstreamString - streamString)+1 ) // just for sure that pointers and length match (test for +-1 match)
 					{
 						cerr << "\nIndirectObject: Possible problem with determining stream\n and length of stream in object " <<
 						this->objectNumber << "\n Length from dictionary is: " << lengthNumber <<
@@ -237,14 +238,14 @@ bool IndirectObject::processAsStream()
             if(filterObject->objectType == PdfObject::TYPE_NAME && strcmp(((NameObject *) filterObject)->name, "/FlateDecode") == 0)
             {
 							this->unencodedStreamSize = this->deflateStream(streamString, 
-								endstreamString, &this->unencodedStream);
+								lengthNumber, &this->unencodedStream);
 							if(logEnabled)
 								clog << "\nStream successfully decoded by FlateDecode.";
 						}
 						else
 						{
 							cerr << "\nIndirectObject: Not implemented: \n Unsupported filters in stream of object " <<
-							this->objectNumber << ". \n Skipping this object.";
+							this->objectNumber << ". \n Skipping this object.\n";
 							return false;
 						}
 					}
@@ -257,10 +258,9 @@ bool IndirectObject::processAsStream()
 	return false;
 }
 
-long IndirectObject::deflateStream(char * streamStart, char * streamEnd, char ** output)
+long IndirectObject::deflateStream(char * streamStart, long streamLen, char ** output)
 {
-	//TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=7
-	long outsize = (streamEnd - streamStart)*10; //assuming that output will not be bigger than ten times input
+  long outsize = streamLen*10; //assuming that output will not be bigger than ten times input
 
   if(this->streamDictionary != null && this->streamDictionary->getObject("DL") != null) 
   {
@@ -278,7 +278,7 @@ long IndirectObject::deflateStream(char * streamStart, char * streamEnd, char **
 	z_stream zstrm;
 	memset(&zstrm, 0, sizeof(zstrm));
 	
-	zstrm.avail_in = streamEnd - streamStart + 1;
+  zstrm.avail_in = streamLen;
 	zstrm.avail_out = outsize;
 	zstrm.next_in = (Bytef*)(streamStart);
 	zstrm.next_out = (Bytef*)out;

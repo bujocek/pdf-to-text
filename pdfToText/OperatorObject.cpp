@@ -4,35 +4,19 @@
 OperatorObject::OperatorObject(char ** endKey, char * source)
 {
   this->objectType = PdfObject::TYPE_OPERATOR;
-  this->name = new char[4];
   this->source = source;
-  if(isalpha(*source))
+  //find end
+  *endKey = source;
+  while(!StringUtils::isDelimiter(**endKey) && !StringUtils::isWhiteSpace(**endKey))
   {
-    this->name[0] = (*source);
-    if(isalpha(*(source+1)))
-      this->name[1] = *(source+1);
-    else
-    {
-      this->name[1] = 0;
-      *endKey = source + 1;
-    }
-    if(isalpha(*(source+2)))
-    {
-      this->name[2] = *(source+2);
-      this->name[3] = 0;
-      *endKey = source + 3;
-    }
-    else
-    {
-      this->name[2] = 0;
-      *endKey = source + 2;
-    }
+    *endKey = *endKey+1;
   }
-  else if((*source) == '\'' || (*source) == '"')
+  int len = *endKey - source;
+  if(len > 0)
   {
-    this->name[0] = (*source);
-    this->name[1] = 0;
-    *endKey = source + 1;
+    this->name = new char[ len + 1];
+    strncpy(this->name, source, len);
+    this->name[len] = 0;
   }
   else
   {
@@ -43,11 +27,13 @@ OperatorObject::OperatorObject(char ** endKey, char * source)
 
 OperatorObject::~OperatorObject(void)
 {
+  if(this->name != null)
+    delete this->name;
 }
 
 bool OperatorObject::canBeOperator(char * source)
 {
-  if(isalpha(*source) || (*source) == '"' || (*source) == '\'')
+  if(!StringUtils::isDelimiter(*source) && !StringUtils::isWhiteSpace(*source))
     return true;
   return false;
 }

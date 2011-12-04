@@ -47,15 +47,18 @@ int main(int argc, char* argv[])
 	if(logEnabled)
 	{
 		clog << "\nProgram launched with parameters:\n";
+    cout << "\nProgram launched with parameters:\n";
 		for(int ii = 0; ii < argc; ii++)
 		{
 			clog << (argv[ii]) << " ";
+      cout << (argv[ii]) << " ";
 		}
 	}
 
 	if(argc != 3) //program inputFile oputputFile
 	{
 		cerr << "\npdfToText: Wrong arguments. Usage: pdfToText [input pdf file] [otput txt file]\n";
+		cout << "\npdfToText: Wrong arguments. Usage: pdfToText(.exe) [input pdf file] [otput txt file]\n";
 		end();
 		return 1;
 	}
@@ -69,6 +72,7 @@ int main(int argc, char* argv[])
 	if (!filei.is_open() || !filei.good())
 	{
 		cerr << "\npdfToText: Could not open input file";
+    cout << "\nCould not open input file.";
 		end();
 		return 2; //files couldnt be opened
 	}
@@ -83,6 +87,7 @@ int main(int argc, char* argv[])
 	if (fileo == null)
 	{
 		cerr << "\npdfToText: Could not open output file";
+    cout << "\nCould not open output file";
 		end();
 		return 2; //files couldnt be opened
 	}

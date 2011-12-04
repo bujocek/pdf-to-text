@@ -17,6 +17,20 @@ public:
 	static char * strStrModified(char * strSource, char * searchString, int length = -1,  bool caseInsensitive = false);
 
   /**
+  determines if character is (as considered in PDF specification) a delimiter
+  which means if it has one of these codes:40,41,60,62,91,93,123,125,47,37
+  */
+  static bool isDelimiter(char character);
+
+  /**
+  determines if character is (as considered in PDF specification) a end-of-line marker
+  which means if it has one of these CR, LF
+  According to PDF specification the eol marker can be even combination CR+LF but in this case of
+  boolean function that determines if it is  EOL it is enogh to check just those two chars.
+  */
+  static bool isEOL(char character);
+  
+  /**
   determines if character is (as considered in PDF specification) a white space
   which means if it has one of these codes:0,9,10,12,13,32
   */

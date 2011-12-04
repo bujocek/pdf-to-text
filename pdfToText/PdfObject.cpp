@@ -22,6 +22,15 @@ PdfObject::~PdfObject(void)
 PdfObject * PdfObject::readValue(char ** endKey, char * source, bool isRefferenceAllowed, int sourceLen)
 {
   source = StringUtils::skipWhiteSpace(source);
+  if(*source == '%')
+  {
+    //Skip comments
+    while(!StringUtils::isEOL(*source))
+    {
+      source += 1;
+    }
+    source = StringUtils::skipWhiteSpace(source);
+  }
   if(NumberObject::canBeNumber(source)) //can be number or reference
   {
     NumberObject * no = new NumberObject(endKey, source);

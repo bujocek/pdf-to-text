@@ -22,13 +22,14 @@ private:
 public:
   IndirectObject * indirectObject;
   PageTreeNode * page;
+  map<int,PdfObject*> streamObjectMap;
   ContentStream(IndirectObject * io, PageTreeNode * page);
   ~ContentStream(void);
   
   /**
 	tries to retrieve text from Pdf object if there is some
 	*/
-	wchar_t * getText();
+	wchar_t * getText(ContentStream * prevStream = null);
   
   /**
   method that processes string object and returns text

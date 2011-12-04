@@ -63,8 +63,8 @@ public:
 	bool processAsStream();
 
 	/**
-	deflates stream defined between streamStart and streamEnd and returns deflated result as a string
+	deflates stream defined starting on streamStart and with length of streamLen and returns deflated result as a string
 	*/
-	long deflateStream(char * streamStart, char * streamEnd, char ** output);
+	long deflateStream(char * streamStart, long streamLen, char ** output);
 
 };

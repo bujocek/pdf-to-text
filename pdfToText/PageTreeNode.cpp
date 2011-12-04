@@ -122,10 +122,13 @@ void PageTreeNode::processPage()
 void PageTreeNode::getText(FILE * file)
 {
   list<ContentStream*>::iterator csi;
+  ContentStream * prevCsi = null;
   for(csi = this->contents.begin(); csi != this->contents.end(); csi++)
   {
-    wchar_t * res = (*csi)->getText();
-    fwrite(res,sizeof(wchar_t), wcslen(res), file);
+    wchar_t * res = (*csi)->getText(prevCsi);
+    if(res != null)
+      fwrite(res,sizeof(wchar_t), wcslen(res), file);
+    prevCsi = *csi;
   }
 }
 
