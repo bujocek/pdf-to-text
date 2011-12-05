@@ -1,5 +1,5 @@
 #pragma once
-#include "pdfobject.h"
+#include "PdfObject.h"
 
 /*
 Class for representing string PDF objects.<br>

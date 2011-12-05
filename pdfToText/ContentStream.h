@@ -1,10 +1,10 @@
 #pragma once
 #include "CommonHeader.h"
-#include "pdfobject.h"
+#include "PdfObject.h"
 #include "IndirectObject.h"
 #include "PageTreeNode.h"
 #include "IndirectObjectReference.h"
-#include "indirectObject.h"
+#include "IndirectObject.h"
 #include "OperatorObject.h"
 #include "DictionaryObject.h"
 #include "StringObject.h"
