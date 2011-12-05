@@ -1,3 +1,4 @@
+#pragma once
 /**
 This is base class for representing all main Pdf Objects. <br>
 See TYPE_... constants to know which objects can be represented.

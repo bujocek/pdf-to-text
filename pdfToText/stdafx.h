@@ -9,7 +9,7 @@
 #include "IndirectObject.h"
 
 #include <stdio.h>
-#include <tchar.h>
+#include <string.h>
 #include <map>
 
 using namespace std;
