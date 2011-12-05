@@ -5,7 +5,6 @@
 
 using namespace std;
 
-
 //one row of cross refference table
 typedef char tableRow[21];
 

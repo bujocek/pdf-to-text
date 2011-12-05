@@ -30,7 +30,7 @@ class ToUnicodeCMap
 {
 private:
   IndirectObject * indirectObject;
-  list <pair<StringObject*, StringObject*>> codeRanges;
+  list <pair<StringObject*, StringObject*> > codeRanges;
   map<int, StringObject *> codeCharMap;
   vector<BFRange> codeRangeMapVector;
 public:

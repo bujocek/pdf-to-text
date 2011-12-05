@@ -1,6 +1,7 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "XRef.h"
 #include "StringUtils.h"
+#include <stdlib.h>
 
 using namespace std;
 
@@ -162,7 +163,7 @@ XRefSubsection * XRef::getXRef()
 			int count = 0;
 			int firstObjectNumber = 0;
 			StringUtils::fGetLine(memBlock, this->fileSize, *file); // read object index and number of objects
-			if(sscanf_s(memBlock, "%i %i", &firstObjectNumber, &count)<2)
+			if(sscanf(memBlock, "%i %i", &firstObjectNumber, &count)<2)
 			{
 				XRefTable = resultTable;
 				return resultTable;

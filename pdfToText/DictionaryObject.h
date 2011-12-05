@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <map>
-#include <string>
+#include <string.h>
 #include "PdfObject.h"
 
 /**
