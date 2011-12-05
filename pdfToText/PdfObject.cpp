@@ -43,7 +43,7 @@ PdfObject * PdfObject::readValue(char ** endKey, char * source, bool isRefferenc
     else //it is reference or more numbers
     {
       char * ekOld = *endKey;
-      long n2 = strtol(*endKey, endKey, 10);
+      strtol(*endKey, endKey, 10);
       *endKey = StringUtils::skipWhiteSpace(*endKey);
       if(**endKey == 'R') //it is refference
       {

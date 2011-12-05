@@ -204,9 +204,8 @@ wchar_t * charToWchar(char * source)
 {
   size_t origsize = strlen(source) + 1;
   const size_t newsize = origsize * sizeof(wchar_t);
-  size_t convertedChars = 0;
   wchar_t * wcstring = new wchar_t[newsize];
-  convertedChars = mbstowcs(wcstring, source, origsize);
+  mbstowcs(wcstring, source, origsize);
   return wcstring;
 }
 

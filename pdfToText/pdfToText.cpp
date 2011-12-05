@@ -22,6 +22,8 @@ void end();
 bool logEnabled;
 map < pair <int, int>, IndirectObject* > * objectMap;
 clock_t startClock;
+ofstream logStream ("logfile.txt", ios::app);
+ofstream errStream ("errorfile.txt", ios::app);
 
 int main(int argc, char* argv[])
 {
@@ -33,14 +35,12 @@ int main(int argc, char* argv[])
 	
 	//TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=5
 	logEnabled = true;
-	ofstream logStream ("logfile.txt", ios::app);
 	if(logEnabled)
 	{
 		clog.rdbuf(logStream.rdbuf());
     clog << "\n\n-------------------\n Start program " << ptm->tm_mday << "." << ptm->tm_mon + 1 << "." << ptm->tm_year + 1900
       << " " << ptm->tm_hour << ":" << ptm->tm_min << ":" << ptm->tm_sec << "\n--------------" << endl;
 	}
-	ofstream errStream ("errorfile.txt", ios::app);
 	cerr.rdbuf(errStream.rdbuf());
   cerr << "\n\n-------------------\n Start program " << ptm->tm_mday << "." << ptm->tm_mon+1 << "." << ptm->tm_year + 1900
     << " " << ptm->tm_hour << ":" << ptm->tm_min << ":" << ptm->tm_sec << endl;
@@ -230,7 +230,7 @@ int main(int argc, char* argv[])
   {
     (*pageListIterator)->getText(fileo);
   }
-
+  fclose(fileo);
 	end();
 	return 0;
 }
@@ -242,5 +242,7 @@ void end()
 	if(logEnabled)
 		clog << "\n\n--------------\n End program (" << runningTime << "s)\n-------------------" << endl;
 	cerr << "\n\n End program (" << runningTime << "s)\n-------------------" << endl;
+  errStream.close();
+  logStream.close();
 }
 

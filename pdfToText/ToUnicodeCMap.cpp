@@ -69,7 +69,6 @@ ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
     while(bbfc != null)
     {
       bbfc += 12;
-      int i = 0;
       do
       {
         StringObject beginCode = StringObject(&bbfc, bbfc);
