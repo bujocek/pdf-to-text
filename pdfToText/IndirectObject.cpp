@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "IndirectObject.h"
 
-
 using namespace std;
 
 IndirectObject::IndirectObject(tableRow row, int objectNum, ifstream& iFile)
@@ -44,7 +43,7 @@ bool IndirectObject::load()
 	{
 		//read entire object into the memory
 		//find obj and endobj keywords
-		queue<char*, deque<char*>> blockQueue;
+		queue<char*, deque<char*> > blockQueue;
 		int blockSize = 128;
 		char * prevBlock = null;
 		char * block = null;

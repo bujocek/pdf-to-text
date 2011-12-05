@@ -9,6 +9,7 @@
 #include "IndirectObjectReference.h"
 #include "OperatorObject.h"
 
+
 PdfObject::PdfObject(void)
 {
   this->objectType = 0;

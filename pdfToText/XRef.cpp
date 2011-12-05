@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "XRef.h"
 #include "StringUtils.h"
-#include <stdlib.h>
 
 using namespace std;
 

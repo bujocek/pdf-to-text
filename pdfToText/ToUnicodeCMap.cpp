@@ -100,7 +100,7 @@ ToUnicodeCMap::~ToUnicodeCMap(void)
 
 bool ToUnicodeCMap::isCharCode(unsigned char * charCode, int len)
 {
-  list <pair<StringObject*, StringObject*>>::iterator cri = this->codeRanges.begin();
+  list <pair<StringObject*, StringObject*> >::iterator cri = this->codeRanges.begin();
   for ( ;cri != this->codeRanges.end(); cri++)
   {
     if(cri->first->byteStringLen == len)
