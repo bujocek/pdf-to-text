@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "StringObject.h"
 
 StringObject::StringObject(char ** endKey, char * source)

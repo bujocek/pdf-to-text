@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ToUnicodeCMap.h"
 
 bool compareRangeLen(pair<StringObject*, StringObject*> p1, pair<StringObject*, StringObject*> p2)

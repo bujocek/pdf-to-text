@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "BoolObject.h"
 
 BoolObject::BoolObject(bool value)

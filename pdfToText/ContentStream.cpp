@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ContentStream.h"
 
 #ifdef _WIN32

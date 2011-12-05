@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "OperatorObject.h"
 
 OperatorObject::OperatorObject(char ** endKey, char * source)

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "NumberObject.h"
 
 NumberObject::NumberObject(float number)

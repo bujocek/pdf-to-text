@@ -20,9 +20,9 @@ pdfToText.cpp
 /////////////////////////////////////////////////////////////////////////////
 Other standard files:
 
-StdAfx.h, StdAfx.cpp
+stdafx.h, stdafx.cpp
     These files are used to build a precompiled header (PCH) file
-    named pdfToText.pch and a precompiled types file named StdAfx.obj.
+    named pdfToText.pch and a precompiled types file named stdafx.obj.
 
 /////////////////////////////////////////////////////////////////////////////
 Other notes:

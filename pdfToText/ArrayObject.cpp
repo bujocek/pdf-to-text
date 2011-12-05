@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ArrayObject.h"
 
 ArrayObject::ArrayObject(char ** endKey, char * source)

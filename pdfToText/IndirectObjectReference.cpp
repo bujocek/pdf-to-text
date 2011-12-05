@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "IndirectObjectReference.h"
 
 IndirectObjectReference::IndirectObjectReference(char ** endKey, char * source)
