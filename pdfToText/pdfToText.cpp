@@ -25,11 +25,11 @@ clock_t startClock;
 
 int main(int argc, char* argv[])
 {
-	startClock = clock();
-	char dateStr [9];
-    char timeStr [9];
-    _strdate_s( dateStr );
-    _strtime_s( timeStr );
+  time_t timer;
+  struct tm *ptm;
+  time(&timer);
+  ptm = localtime(&timer);
+  startClock = clock();
 	
 	//TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=5
 	logEnabled = true;
@@ -37,12 +37,13 @@ int main(int argc, char* argv[])
 	if(logEnabled)
 	{
 		clog.rdbuf(logStream.rdbuf());
-		clog << "\n\n-------------------\n Start program " << 
-			dateStr << " " << timeStr << "\n--------------" << endl;
+    clog << "\n\n-------------------\n Start program " << ptm->tm_mday << "." << ptm->tm_mon + 1 << "." << ptm->tm_year + 1900
+      << " " << ptm->tm_hour << ":" << ptm->tm_min << ":" << ptm->tm_sec << "\n--------------" << endl;
 	}
 	ofstream errStream ("errorfile.txt", ios::app);
 	cerr.rdbuf(errStream.rdbuf());
-	cerr << "\n\n-------------------\n Start program " << dateStr << " " << timeStr << endl;
+  cerr << "\n\n-------------------\n Start program " << ptm->tm_mday << "." << ptm->tm_mon+1 << "." << ptm->tm_year + 1900
+    << " " << ptm->tm_hour << ":" << ptm->tm_min << ":" << ptm->tm_sec << endl;
 
 	if(logEnabled)
 	{
