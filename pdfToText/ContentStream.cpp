@@ -90,7 +90,8 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
             {
               PdfObject * tucm = null;
               this->currentCMap = null;
-              tucm = this->currentFont->getObject("/ToUnicode");
+              char * tucmName = "/ToUnicode";
+              tucm = this->currentFont->getObject(tucmName);
               if(tucm != null && tucm->objectType == PdfObject::TYPE_INDIRECT_OBJECT)
               {
                 this->currentCMap = new ToUnicodeCMap((IndirectObject*)tucm);

@@ -8,7 +8,7 @@ IndirectObjectReference::IndirectObjectReference(char ** endKey, char * source)
   this->objectNumber = 0;
   this->generationNumber = 0;
   int len = 0;
-  if(2 == sscanf(source, "%d %d%n", &(this->objectNumber), &(this->generationNumber), &len))
+  if(2 == sscanf(source, "%ld %ld%n", &(this->objectNumber), &(this->generationNumber), &len))
   {
     *endKey = source+len +2; //+2 is to skip " R" after numbers
   }
