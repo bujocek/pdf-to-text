@@ -238,7 +238,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\IndirectObjectRefference.cpp"
+					RelativePath=".\IndirectObjectReference.cpp"
 					>
 				</File>
 				<File
@@ -289,10 +289,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\targetver.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ToUnicodeCMap.h"
 				>
 			</File>
@@ -332,7 +328,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\IndirectObjectRefference.h"
+					RelativePath=".\IndirectObjectReference.h"
 					>
 				</File>
 				<File

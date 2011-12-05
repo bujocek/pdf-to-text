@@ -3,7 +3,7 @@
 #include "StringUtils.h"
 #include "string.h"
 #include "NameObject.h"
-#include "IndirectObjectRefference.h"
+#include "IndirectObjectReference.h"
 
 using namespace std;
 
@@ -62,7 +62,7 @@ PdfObject * DictionaryObject::getObject(char * mapKey)
   if(po == null)
     return null;
   else if(po->objectType == PdfObject::TYPE_INDIRECT_OBJECT_REFFERENCE)
-    return ((IndirectObjectRefference*) po)->getIndirectObject();
+    return ((IndirectObjectReference*) po)->getIndirectObject();
   else
     return po;
 }

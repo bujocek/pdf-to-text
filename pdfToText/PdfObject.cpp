@@ -6,7 +6,7 @@
 #include "NumberObject.h"
 #include "ArrayObject.h"
 #include "StringObject.h"
-#include "IndirectObjectRefference.h"
+#include "IndirectObjectReference.h"
 #include "OperatorObject.h"
 
 PdfObject::PdfObject(void)
@@ -19,7 +19,7 @@ PdfObject::~PdfObject(void)
 {
 }
 
-PdfObject * PdfObject::readValue(char ** endKey, char * source, bool isRefferenceAllowed, int sourceLen)
+PdfObject * PdfObject::readValue(char ** endKey, char * source, bool isRefferenceAllowed)
 {
   source = StringUtils::skipWhiteSpace(source);
   if(*source == '%')
@@ -47,7 +47,7 @@ PdfObject * PdfObject::readValue(char ** endKey, char * source, bool isRefferenc
       if(**endKey == 'R') //it is refference
       {
         delete no;
-        return new IndirectObjectRefference(endKey, source);
+        return new IndirectObjectReference(endKey, source);
       }
       else //it is more numbers
       {

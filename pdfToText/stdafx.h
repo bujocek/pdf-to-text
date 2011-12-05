@@ -6,7 +6,6 @@
 #pragma once
 #define null NULL
 
-#include "targetver.h"
 #include "IndirectObject.h"
 
 #include <stdio.h>

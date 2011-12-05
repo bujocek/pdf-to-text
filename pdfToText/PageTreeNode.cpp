@@ -46,7 +46,7 @@ list<PageTreeNode *> * PageTreeNode::getKids()
       {
         if((*objectListIterator)->objectType == PdfObject::TYPE_INDIRECT_OBJECT_REFFERENCE)
         {
-          IndirectObject * io = ((IndirectObjectRefference*)(*objectListIterator))->getIndirectObject();
+          IndirectObject * io = ((IndirectObjectReference*)(*objectListIterator))->getIndirectObject();
           if(io == null)
             return badQuit();
           DictionaryObject * dictionary = (DictionaryObject*) io->getFirstObject();
@@ -95,7 +95,7 @@ void PageTreeNode::processPage()
     {
       if((*oliterator)->objectType == PdfObject::TYPE_INDIRECT_OBJECT_REFFERENCE)
       {
-        cs = new ContentStream(((IndirectObjectRefference*)(*oliterator))->getIndirectObject(),this);
+        cs = new ContentStream(((IndirectObjectReference*)(*oliterator))->getIndirectObject(),this);
         this->contents.push_back(cs);
       }
       else

@@ -54,7 +54,7 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
   PdfObject * value;
   do
   {
-    value = PdfObject::readValue(endKey, source, false, usingStringLen - (source-usingString));
+    value = PdfObject::readValue(endKey, source, false);
     streamObjectMap[index] = value;
   
     if(value->objectType == PdfObject::TYPE_OPERATOR)

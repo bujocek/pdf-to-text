@@ -1,7 +1,7 @@
 #include "StdAfx.h"
-#include "IndirectObjectRefference.h"
+#include "IndirectObjectReference.h"
 
-IndirectObjectRefference::IndirectObjectRefference(char ** endKey, char * source)
+IndirectObjectReference::IndirectObjectReference(char ** endKey, char * source)
 {
   this->objectType = PdfObject::TYPE_INDIRECT_OBJECT_REFFERENCE;
   this->source = source;
@@ -14,15 +14,15 @@ IndirectObjectRefference::IndirectObjectRefference(char ** endKey, char * source
   }
   else
   {
-    cerr<<"\nIndirectObjectRefference: Couldn't read indirect object refference.\n";
+    cerr<<"\nIndirectObjectReference: Couldn't read indirect object refference.\n";
   }
 }
 
-IndirectObjectRefference::~IndirectObjectRefference(void)
+IndirectObjectReference::~IndirectObjectReference(void)
 {
 }
 
-IndirectObject * IndirectObjectRefference::getIndirectObject()
+IndirectObject * IndirectObjectReference::getIndirectObject()
 {
   return (*objectMap)[make_pair(this->objectNumber, this->generationNumber)];
 }

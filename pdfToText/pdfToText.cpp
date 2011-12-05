@@ -8,7 +8,7 @@
 #include "IndirectObject.h"
 #include "DictionaryObject.h"
 #include "PageTreeNode.h"
-#include "IndirectObjectRefference.h"
+#include "IndirectObjectReference.h"
 #include <map>
 #include <algorithm>
 #include <time.h>

@@ -3,7 +3,7 @@
 #include "DictionaryObject.h"
 #include "ContentStream.h"
 #include "ArrayObject.h"
-#include "IndirectObjectRefference.h"
+#include "IndirectObjectReference.h"
 #include "IndirectObject.h"
 #include <list>
 #include <fstream>
@@ -11,7 +11,8 @@
 using namespace std;
 
 /**
-Class used for representing one node in Page tree. It can be inner node or leaf node. All leaf nodes are pages itself.
+Class used for representing one node in Page tree.<br> 
+It can be inner node or leaf node. All leaf nodes are pages itself.
 Class is created from dictionary object passed to the constructor.
 */
 class PageTreeNode
@@ -31,7 +32,7 @@ public:
   bool isLeaf;
   
   /**
-  flag if getKids method was already called
+  Flag if getKids method was already called.
   */
   bool lookedForKids;
 
@@ -48,34 +49,47 @@ public:
   
   /**
   Creates and returns (always the same) list of child page tree nodes.
+  \return List of child page tree nodes.
   */
   list<PageTreeNode *> * getKids();
 
   /**
   Pass empty list to the method and it will add to the list all leaf nodes from the Page tree.
+  \pageList List of Pages the child pages of this node will be added to.
   */
   void createPageList( list<PageTreeNode *> * pageList);
   
   /**
-  prepares page for getting text - prepares contents and resources
+  Prepares page for getting text - prepares contents and resources
   */
   void processPage();
   
   /**
-  finds fonts in page resources
+  Finds fonts in page resources
+  \return DictionaryObject with fonts form resources.
   */
   DictionaryObject * getFonts();
 
   /**
-  gets resources for the page
+  Gets resources for the page
+  \return DictionaryObject with resources.
   */
   DictionaryObject * getResources();
   
   /**
-  method that writes page text to the output file
+  Method that writes page text to the output file
+  \param file Output file the text will be written to.
   */
   void getText(FILE * file);
-
+  
+  /**
+  Constructor.<br>
+  Creates PageTreeNode object from node dictionary
+  */
   PageTreeNode(DictionaryObject * nodeDictionary);
+
+  /**
+  Destructor.
+  */
   ~PageTreeNode(void);
 };
