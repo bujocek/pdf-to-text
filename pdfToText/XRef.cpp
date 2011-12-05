@@ -95,8 +95,7 @@ long XRef::findXRef()
 	file->clear();
 	file->seekg (fileSize-memBlockSize);
 	file->read(memBlock, memBlockSize);
-  long tt = file->gcount();
-	//  -- find last startxref key word --
+  //  -- find last startxref key word --
   char* pos = StringUtils::strStrModified(memBlock, "startxref", memBlockSize);
 	if(pos == NULL)
 	{

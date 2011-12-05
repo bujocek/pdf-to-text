@@ -230,7 +230,7 @@ int main(int argc, char* argv[])
   {
     (*pageListIterator)->getText(fileo);
   }
-
+  fclose(fileo);
 	end();
 	return 0;
 }
