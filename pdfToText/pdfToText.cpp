@@ -24,6 +24,7 @@ map < pair <int, int>, IndirectObject* > * objectMap;
 clock_t startClock;
 ofstream logStream ("logfile.txt", ios::app);
 ofstream errStream ("errorfile.txt", ios::app);
+streambuf *clogBack, *cerrBack;
 
 int main(int argc, char* argv[])
 {
@@ -37,11 +38,11 @@ int main(int argc, char* argv[])
 	logEnabled = true;
 	if(logEnabled)
 	{
-		clog.rdbuf(logStream.rdbuf());
+		clogBack = clog.rdbuf(logStream.rdbuf());
     clog << "\n\n-------------------\n Start program " << ptm->tm_mday << "." << ptm->tm_mon + 1 << "." << ptm->tm_year + 1900
       << " " << ptm->tm_hour << ":" << ptm->tm_min << ":" << ptm->tm_sec << "\n--------------" << endl;
 	}
-	cerr.rdbuf(errStream.rdbuf());
+	cerrBack = cerr.rdbuf(errStream.rdbuf());
   cerr << "\n\n-------------------\n Start program " << ptm->tm_mday << "." << ptm->tm_mon+1 << "." << ptm->tm_year + 1900
     << " " << ptm->tm_hour << ":" << ptm->tm_min << ":" << ptm->tm_sec << endl;
 
@@ -242,6 +243,8 @@ void end()
 	if(logEnabled)
 		clog << "\n\n--------------\n End program (" << runningTime << "s)\n-------------------" << endl;
 	cerr << "\n\n End program (" << runningTime << "s)\n-------------------" << endl;
+  clog.rdbuf(clogBack);
+  cerr.rdbuf(cerrBack);
   errStream.close();
   logStream.close();
 }
