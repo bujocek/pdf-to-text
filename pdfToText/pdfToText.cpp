@@ -25,6 +25,7 @@ clock_t startClock;
 ofstream logStream ("logfile.txt", ios::app);
 ofstream errStream ("errorfile.txt", ios::app);
 streambuf *clogBack, *cerrBack;
+iconv_t conv_desc = (iconv_t) -1;
 
 int main(int argc, char* argv[])
 {
@@ -93,7 +94,14 @@ int main(int argc, char* argv[])
 		end();
 		return 2; //files couldnt be opened
 	}
-
+	conv_desc = iconv_open ("WCHAR_T", "UTF-16BE");
+	if (conv_desc == (iconv_t)-1)
+	{
+		/* Initialization failure. */
+		cerr << "\npdfToText: Iconv init failed.\n";
+		end();
+		return 5;
+	}
 	//-----------------------------------------------
 	//---- Read reference table and find objects ----
   if(logEnabled)
@@ -247,5 +255,7 @@ void end()
   cerr.rdbuf(cerrBack);
   errStream.close();
   logStream.close();
+  if((iconv_t) -1)
+	  iconv_close (conv_desc);
 }
 
