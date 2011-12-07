@@ -231,41 +231,27 @@ wchar_t * ContentStream::convertHexaString(StringObject * string, ToUnicodeCMap 
       if(stringCharCode != null)
       {
     	unsigned char * utf16be = stringCharCode->getByteString();
-        if(sizeof(wchar_t) == 2)
-        {
-			wchar_t* bytes = reinterpret_cast<wchar_t*>(utf16be);
-			int len = stringCharCode->byteStringLen/2;
-			int j = 0;
-			for(; j < len; j++)
-			{
-			  wchar_t x = ((bytes[j] & 0xff) << 8 ) | (bytes[j] >> 8 );
-			  newbytes[currentLen + j] = x;
-			}
-			currentLen += j;
-        }
-        else
-        {
-        	size_t iconv_value;
-			size_t len;
-			len = stringCharCode->byteStringLen;
-			size_t length = len*sizeof(wchar_t);
-			size_t ls = length;
-			if (!len) {
-				cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
-				continue;
-			}
-			wchar_t outbuf[len];
-			char * outbufch = (char*)outbuf;
-			iconv_value = iconv (conv_desc, (char**) &utf16be,
-					& len, &outbufch , &length);
-			/* Handle failures. */
-			if (iconv_value == (size_t) -1)
-			{
-				cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
-			}
-			memcpy(&newbytes[currentLen], outbuf, ls-length);
-			currentLen += (ls-length)/sizeof(wchar_t);
-        }
+        
+    	size_t iconv_value;
+	    size_t len =  stringCharCode->byteStringLen;
+	    size_t length = len*sizeof(wchar_t);
+	    size_t ls = length;
+	    if (!len) 
+      {
+		    cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
+		    continue;
+	    };
+      wchar_t * outbuf = new wchar_t(len);
+	    char * outbufch = (char*)outbuf;
+	    iconv_value = iconv (conv_desc, (const char**) &utf16be,
+			    & len, &outbufch , &length);
+	    /* Handle failures. */
+	    if (iconv_value == (size_t) -1)
+	    {
+		    cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
+	    }
+	    memcpy(&newbytes[currentLen], outbuf, ls-length);
+	    currentLen += (ls-length)/sizeof(wchar_t);
       }
       i=0;
     }

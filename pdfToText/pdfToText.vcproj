@@ -171,6 +171,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\lib\libcharset1.def"
+				>
+			</File>
+			<File
+				RelativePath=".\lib\libiconv.def"
+				>
+			</File>
+			<File
 				RelativePath=".\PageTreeNode.cpp"
 				>
 			</File>
@@ -273,6 +281,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\iconv.h"
+				>
+			</File>
+			<File
 				RelativePath=".\PageTreeNode.h"
 				>
 			</File>
@@ -363,6 +375,14 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\lib\libcharset.lib"
+			>
+		</File>
+		<File
+			RelativePath=".\lib\libiconv.lib"
+			>
+		</File>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>
