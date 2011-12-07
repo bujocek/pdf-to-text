@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ContentStream.h"
 
-#ifdef _WIN32
+#ifdef _WIN32 || _WIN64
 #define NEWLINE L"\r\n" // windows
 #elif __APPLE__
 #define NEWLINE L"\r" // mac
@@ -243,8 +243,14 @@ wchar_t * ContentStream::convertHexaString(StringObject * string, ToUnicodeCMap 
 	    };
       wchar_t * outbuf = new wchar_t(len);
 	    char * outbufch = (char*)outbuf;
+#ifdef _WIN32 || _WIN64
 	    iconv_value = iconv (conv_desc, (const char**) &utf16be,
 			    & len, &outbufch , &length);
+#else
+      	iconv_value = iconv (conv_desc, (char**) &utf16be,
+			    & len, &outbufch , &length);
+
+#endif
 	    /* Handle failures. */
 	    if (iconv_value == (size_t) -1)
 	    {

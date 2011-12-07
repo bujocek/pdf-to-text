@@ -11,7 +11,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _WIN32 || _WIN64
 #include "iconv.h"
+#else
+#include <iconv.h>
+#endif
 #include <map>
 
 using namespace std;
