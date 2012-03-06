@@ -160,7 +160,7 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
           arrayObject = streamObjectMap[index-1];
         else if(prevStream != null && prevStream->streamObjectMap.size() >= 1-index)
         {
-          arrayObject = prevStream->streamObjectMap[prevStream->streamObjectMap.size() - 2 + index];
+          arrayObject = prevStream->streamObjectMap[prevStream->streamObjectMap.size() - 1 + index];
         }
         else
         {

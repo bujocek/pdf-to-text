@@ -43,16 +43,16 @@ bool StringUtils::isDelimiter(char character)
 {
   switch(character)
   {
-    case 40:
-    case 41:
-    case 60:
-    case 62:
-    case 91:
-    case 93:
-    case 123:
-    case 125:
-    case 47:
-    case 37:
+    case 40://'('
+    case 41://')'
+    case 60://'<'
+    case 62://'>'
+    case 91://'['
+    case 93://']'
+    case 123://'{'
+    case 125://'}'
+    case 47://'/'
+    case 37://'%'
       return true;
     default:
       return false;

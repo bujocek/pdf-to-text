@@ -153,24 +153,16 @@ DictionaryObject * PageTreeNode::getResources()
   {
     if(res->objectType == PdfObject::TYPE_DICTIONARY)
       this->resources = (DictionaryObject*) res;
-    else if(res->TYPE_INDIRECT_OBJECT)
+    else if(res->objectType == PdfObject::TYPE_INDIRECT_OBJECT)
     {
       IndirectObject * io = (IndirectObject*) res;
       PdfObject * po = io->getFirstObject();
-      if(po == null)
+      if(po->objectType == PdfObject::TYPE_DICTIONARY)
+        this->resources = (DictionaryObject*) po;
+      else
       {
         cerr << "\nPageTreeNode: Couldn't get resource dictionary from indirect object.\n";
         this->resources = null;
-      }
-      else
-      {
-        if(po->objectType == PdfObject::TYPE_DICTIONARY)
-          this->resources = (DictionaryObject*) po;
-        else
-        {
-          cerr << "\nPageTreeNode: Couldn't get resource dictionary from indirect object.\n";
-          this->resources = null;
-        }
       }
     }
     else
