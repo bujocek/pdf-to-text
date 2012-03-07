@@ -36,6 +36,11 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
     cerr << "\nContentStream: Stream wasn't processed - nothing to extract text from.\n";
     return null;
   }
+  if(this->indirectObject->unencodedStreamSize == 0)
+  {
+    clog << "\nContentStream: An empty content stream found. Skipping this object.";
+    return L"";
+  }
   DictionaryObject * fonts = this->page->getFonts();
   this->currentFont = null;
   wchar_t * result = new wchar_t[this->indirectObject->unencodedStreamSize * sizeof(wchar_t)]; //assuming that the result string will not be bigger than whole stream
