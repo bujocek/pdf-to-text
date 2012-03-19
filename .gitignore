@@ -28,3 +28,6 @@ _ReSharper*/
 #Ignore logs
 logfile.txt
 errorfile.txt
+
+pdfToText/*.cd
+Release/pdfToText.pdb

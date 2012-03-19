@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "IndirectObject.h"
+#include "lzw.h"
 
 using namespace std;
 
@@ -233,20 +234,40 @@ bool IndirectObject::processAsStream()
 					else
 					{
 						//TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=10
-						//If filter is not array and is flate decode than decode it
-            if(filterObject->objectType == PdfObject::TYPE_NAME && strcmp(((NameObject *) filterObject)->name, "/FlateDecode") == 0)
+						if(filterObject->objectType == PdfObject::TYPE_NAME)
             {
-							this->unencodedStreamSize = this->deflateStream(streamString, 
-								lengthNumber, &this->unencodedStream);
-							if(logEnabled)
-								clog << "\nStream successfully decoded by FlateDecode.";
+              if(strcmp(((NameObject *) filterObject)->name, "/FlateDecode") == 0)
+              {
+							  this->unencodedStreamSize = this->deflateStream(streamString, 
+								  lengthNumber, &this->unencodedStream);
+							  if(logEnabled)
+								  clog << "\nStream successfully decoded by FlateDecode.";
+              }
+              else if(strcmp(((NameObject *) filterObject)->name, "/LZWDecode") == 0)
+              {
+                LZWCodec lzw = LZWCodec(9, 12);
+                cerr << "\nIndirectObject: Still not implemented: \n LZW filter in stream object ";
+							  return false;
+              }
+              else
+              {
+                cerr << "\nIndirectObject: Not implemented: \n Unsupported filter in stream of object " <<
+							  this->objectNumber << ". \n Skipping this object.\n";
+							  return false;
+              }
 						}
-						else
+            else if(filterObject->objectType == PdfObject::TYPE_ARRAY)
 						{
-							cerr << "\nIndirectObject: Not implemented: \n Unsupported filters in stream of object " <<
+							cerr << "\nIndirectObject: Not implemented: \n More than one filter used in stream of object " <<
 							this->objectNumber << ". \n Skipping this object.\n";
 							return false;
 						}
+            else
+            {
+              cerr << "\nIndirectObject: Not implemented: \n Unsupported filter definition in stream of object " <<
+							this->objectNumber << ". \n Skipping this object.\n";
+							return false;
+            }
 					}
 				}
 			}

@@ -179,6 +179,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\lzw.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PageTreeNode.cpp"
 				>
 			</File>
@@ -285,6 +289,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\lzw.h"
+				>
+			</File>
+			<File
 				RelativePath=".\PageTreeNode.h"
 				>
 			</File>
@@ -294,6 +302,10 @@
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\StreamIO.h"
 				>
 			</File>
 			<File
@@ -375,6 +387,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\ClassDiagram1.cd"
+			>
+		</File>
 		<File
 			RelativePath=".\lib\libcharset.lib"
 			>
