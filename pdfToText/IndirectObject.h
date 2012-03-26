@@ -35,6 +35,10 @@ private:
 	deflates stream defined starting on streamStart and with length of streamLen and returns deflated result as a string
 	*/
 	long deflateStream(char * streamStart, long streamLen, char ** output);
+  /**
+	decompresses using LZW decompression method stream defined starting on streamStart and with length of streamLen and returns deflated result as a string
+	*/
+	long deLZWStream(char * streamStart, long streamLen, char ** output);
 public:
   
   /**

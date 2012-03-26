@@ -245,9 +245,14 @@ bool IndirectObject::processAsStream()
               }
               else if(strcmp(((NameObject *) filterObject)->name, "/LZWDecode") == 0)
               {
-                LZWCodec lzw = LZWCodec(9, 12);
-                cerr << "\nIndirectObject: Still not implemented: \n LZW filter in stream object ";
+                cerr << "\nIndirectObject: Still not implemented: \n LZW filter in stream of object " <<
+							  this->objectNumber << ". \n Skipping this object.\n";
 							  return false;
+
+                this->unencodedStreamSize = this->deLZWStream(streamString, 
+								  lengthNumber, &this->unencodedStream);
+							  if(logEnabled)
+								  clog << "\nStream successfully decoded by LZWDecode.";
               }
               else
               {
@@ -276,6 +281,34 @@ bool IndirectObject::processAsStream()
 		return true;
 	}
 	return false;
+}
+
+long IndirectObject::deLZWStream(char * streamStart, long streamLen, char ** output)
+{
+  vector<unsigned char> inputVector, outputVector;
+  LZWCodec lzw = LZWCodec(9, 12);
+  
+  //copy stream to vector
+  int i = 0;
+  for(;i<streamLen;i++)
+  {
+    inputVector.push_back((unsigned char)streamStart[i]);
+  }
+  
+  //decompress
+  lzw.decode(inputVector, outputVector);
+  
+  //copy output to new char output
+  char * out = new char[outputVector.size()+1];
+  vector<unsigned char>::iterator vectorIterator = outputVector.begin();
+  for(i=0;i<outputVector.size();i++)
+  {
+    out[i] = (*vectorIterator);
+    vectorIterator++;
+  }
+  out[i] = 0;
+  *output = out;
+  return outputVector.size();
 }
 
 long IndirectObject::deflateStream(char * streamStart, long streamLen, char ** output)

@@ -171,6 +171,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\EncodingTable.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\lib\libcharset1.def"
 				>
 			</File>
@@ -282,6 +286,10 @@
 			>
 			<File
 				RelativePath=".\CommonHeader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\EncodingTable.h"
 				>
 			</File>
 			<File
