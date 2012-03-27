@@ -1,12 +1,11 @@
-#ifndef FONTENCODINGTABLES_H
-#define FONTENCODINGTABLES_H
 
-extern const char *macRomanEncoding[];
-extern const char *macExpertEncoding[];
-extern const char *winAnsiEncoding[];
-extern const char *standardEncoding[];
-extern const char *expertEncoding[];
-extern const char *symbolEncoding[];
-extern const char *zapfDingbatsEncoding[];
-
+#ifndef ENCODINGTABLES
+#define ENCODINGTABLES
+  extern const char *encoding_MacRoman[];
+  extern const char *encoding_MacExpert[];
+  extern const char *encoding_WinAnsi[];
+  extern const char *encoding_Standard[];
+  extern const char *encoding_Expert[];
+  extern const char *encoding_Symbol[];
+  extern const char *encoding_ZapfDingbats[];
 #endif

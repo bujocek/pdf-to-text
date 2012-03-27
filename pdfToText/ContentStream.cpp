@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ContentStream.h"
+#include "EncodingTable.h"
 
 #ifdef _WIN32 || _WIN64
 #define NEWLINE L"\r\n" // windows
@@ -288,6 +289,7 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
     return null;
   }
   
+  //TODO: implement standard encodings and hexa/char string independece
   if(stringObject->isHexa)
   {
     if(this->currentCMap != null)
@@ -296,7 +298,20 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
     }
     else
     {
-      cerr << "\nContentStream: No ToUnicode map found for decoding string.\n";
+      if(logEnabled)
+      {
+        clog << "\nContentStream: No ToUnicode map found for decoding string. Trying other methods.\n";
+      }
+      if(this->currentFont != null)
+      {
+        PdfObject * encoding = this->currentFont->getObject("/Encoding");
+      }
+      else
+      {
+        cerr << "\nContentStream: No font found for decoding string.\n";
+        return L"|-- Unknown string --|";
+      }
+      cerr << "\nContentStream: All implemented methods for decoding string failed.\n";
       return L"|-- Unknown string --|";
     }
   }

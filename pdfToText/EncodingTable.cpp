@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "EncodingTable.h"
 
-const char *macRomanEncoding[256] = {
+const char *encoding_MacRoman[256] = {
   null,
   null,
   null,
@@ -261,7 +261,7 @@ const char *macRomanEncoding[256] = {
   "caron"
 };
 
-const char *macExpertEncoding[256] = {
+const char *encoding_MacExpert[256] = {
   null,
   null,
   null,
@@ -520,7 +520,7 @@ const char *macExpertEncoding[256] = {
   null
 };
 
-const char *winAnsiEncoding[256] = {
+const char *encoding_WinAnsi[256] = {
   null,
   null,
   null,
@@ -779,7 +779,7 @@ const char *winAnsiEncoding[256] = {
   "ydieresis"
 };
 
-const char *standardEncoding[256] = {
+const char *encoding_Standard[256] = {
   null,
   null,
   null,
@@ -1038,7 +1038,7 @@ const char *standardEncoding[256] = {
   null
 };
 
-const char *expertEncoding[256] = {
+const char *encoding_Expert[256] = {
   null,
   null,
   null,
@@ -1297,7 +1297,7 @@ const char *expertEncoding[256] = {
   "Ydieresissmall"
 };
 
-const char *symbolEncoding[256] = {
+const char *encoding_Symbol[256] = {
   null,
   null,
   null,
@@ -1556,7 +1556,7 @@ const char *symbolEncoding[256] = {
   null
 };
 
-const char *zapfDingbatsEncoding[256] = {
+const char *encoding_ZapfDingbats[256] = {
   null,
   null,
   null,
