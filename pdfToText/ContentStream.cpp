@@ -236,34 +236,34 @@ wchar_t * ContentStream::convertHexaString(StringObject * string, ToUnicodeCMap 
       //convert from UTF-16BE to wchar (unicode)
       if(stringCharCode != null)
       {
-    	unsigned char * utf16be = stringCharCode->getByteString();
-        
-    	size_t iconv_value;
-	    size_t len =  stringCharCode->byteStringLen;
-	    size_t length = len*sizeof(wchar_t);
-	    size_t ls = length;
-	    if (!len) 
-      {
-		    cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
-		    continue;
-	    };
-      wchar_t * outbuf = new wchar_t(len);
-	    char * outbufch = (char*)outbuf;
+    	  unsigned char * utf16be = stringCharCode->getByteString();
+          
+    	  size_t iconv_value;
+	      size_t len =  stringCharCode->byteStringLen;
+	      size_t length = len*sizeof(wchar_t);
+	      size_t ls = length;
+	      if (!len) 
+        {
+		      cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
+		      continue;
+	      };
+        wchar_t * outbuf = new wchar_t(len);
+	      char * outbufch = (char*)outbuf;
 #ifdef _WIN32 || _WIN64
-	    iconv_value = iconv (conv_desc, (const char**) &utf16be,
-			    & len, &outbufch , &length);
+	      iconv_value = iconv (conv_desc, (const char**) &utf16be,
+			      & len, &outbufch , &length);
 #else
-      	iconv_value = iconv (conv_desc, (char**) &utf16be,
-			    & len, &outbufch , &length);
+      	  iconv_value = iconv (conv_desc, (char**) &utf16be,
+			      & len, &outbufch , &length);
 
 #endif
-	    /* Handle failures. */
-	    if (iconv_value == (size_t) -1)
-	    {
-		    cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
-	    }
-	    memcpy(&newbytes[currentLen], outbuf, ls-length);
-	    currentLen += (ls-length)/sizeof(wchar_t);
+	      /* Handle failures. */
+	      if (iconv_value == (size_t) -1)
+	      {
+		      cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
+	      }
+	      memcpy(&newbytes[currentLen], outbuf, ls-length);
+	      currentLen += (ls-length)/sizeof(wchar_t);
       }
       i=0;
     }
@@ -288,37 +288,42 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
     cerr << "\nContentStream: Can't proces null object in processStringObject method. Something went wrong.\n";
     return null;
   }
+
+  //TODO: unify processing hexa and char string
   
-  //TODO: implement standard encodings and hexa/char string independece
-  if(stringObject->isHexa)
+  if(this->currentCMap != null) //try toUnicode map
   {
-    if(this->currentCMap != null)
+    if(stringObject->isHexa)
     {
-      return convertHexaString(stringObject, this->currentCMap);
+      return convertHexaString(stringObject, this->currentCMap);  
     }
     else
     {
-      if(logEnabled)
-      {
-        clog << "\nContentStream: No ToUnicode map found for decoding string. Trying other methods.\n";
-      }
-      if(this->currentFont != null)
-      {
-        PdfObject * encoding = this->currentFont->getObject("/Encoding");
-      }
-      else
-      {
-        cerr << "\nContentStream: No font found for decoding string.\n";
-        return L"|-- Unknown string --|";
-      }
-      cerr << "\nContentStream: All implemented methods for decoding string failed.\n";
-      return L"|-- Unknown string --|";
+      return charToWchar(stringObject->string);
     }
   }
   else
   {
-    return charToWchar(stringObject->string);
+    if(logEnabled)
+    {
+      clog << "\nContentStream: No ToUnicode map found for decoding string. Trying other methods.\n";
+    }
+    if(this->currentFont != null) //try some basic encoding
+    {
+      //TODO:Finish processing basic encodings
+      PdfObject * encoding = this->currentFont->getObject("/Encoding");
+      cerr << "\nContentStream: Basic encoding still not implemented.\n";
+      return L"|-- Unknown string --|";
+    }
+    else
+    {
+      cerr << "\nContentStream: No font found for decoding string.\n";
+      return L"|-- Unknown string --|";
+    }
+    cerr << "\nContentStream: All implemented methods for decoding string failed.\n";
+    return L"|-- Unknown string --|";
   }
+  
   return null;
 }
 

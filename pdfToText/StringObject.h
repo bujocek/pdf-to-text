@@ -11,6 +11,8 @@ class StringObject :
 {
 private:
   unsigned char * byteString;
+  char * hexaString;
+  char * charString;
   long numVal;
 public:
   
@@ -30,9 +32,14 @@ public:
   int length;
 
   /**
-  length of byte string
+  length of byte string and char string
   */
   int byteStringLen;
+
+  /**
+  length of hexa string
+  */
+  int hexaStringLen;
 
   /**
   Constructor.<br>
@@ -54,8 +61,20 @@ public:
   int toNum();
   
   /**
-  Converts this hexa string to unsigned char string (byte string)
-  \return This hexa string converted to bytes.
+  Converts this string to unsigned char string (byte string)
+  \return This string converted to bytes.
   */
   unsigned char * getByteString();
+
+  /**
+  Converts this string to char string
+  \return This string converted to chars.
+  */
+  char * getCharString();
+
+  /**
+  Converts this string to hexa string
+  \return This string converted to hexa string.
+  */
+  char * getHexaString();
 };

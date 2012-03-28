@@ -6,7 +6,10 @@ StringObject::StringObject(char ** endKey, char * source)
   this->objectType = PdfObject::TYPE_STRING;
   this->numVal = -1;
   this->byteString = null;
+  this->charString = null;
+  this->hexaString = null;
   this->byteStringLen = 0;
+  this->hexaStringLen = 0;
   this->length = 0;
   source = StringUtils::skipWhiteSpace(source);
   this->source = source;
@@ -28,6 +31,7 @@ StringObject::StringObject(char ** endKey, char * source)
       this->isHexa = true;
       *endKey += 1;
       this->byteStringLen = this->length/2 + this->length%2;
+      this->hexaStringLen = this->length;
     }
   }
   else if(*source == '(')
@@ -59,6 +63,7 @@ StringObject::StringObject(char ** endKey, char * source)
       this->isHexa = false;
       *endKey += 1;
       this->byteStringLen = this->length;
+      this->hexaStringLen = this->length*2;
     }
   }
   else
@@ -117,6 +122,46 @@ unsigned char hexachartochar(char hexa)
   return -1;
 }
 
+char numToHexaChar(int num)
+{
+  switch(num)
+  {
+    case 0:
+      return '0';
+    case 1:
+      return '1';
+    case 2:
+      return '2';
+    case 3:
+      return '3';
+    case 4:
+      return '4';
+    case 5:
+      return '5';
+    case 6:
+      return '6';
+    case 7:
+      return '7';
+    case 8:
+      return '8';
+    case 9:
+      return '9';
+    case 10:
+      return 'A';
+    case 11:
+      return 'B';
+    case 12:
+      return 'C';
+    case 13:
+      return 'D';
+    case 14:
+      return 'E';
+    case 15:
+      return 'F';
+  }
+  return null;
+}
+
 int StringObject::toNum()
 {
   if(numVal >= 0)
@@ -138,21 +183,58 @@ int StringObject::toNum()
 
 unsigned char * StringObject::getByteString()
 {
-  if(!this->isHexa)
-    return null;
   if(this->byteString == null)
   {
-    this->byteString = new unsigned char[this->byteStringLen];
-    char c1,c2;
-    for(int i = 0; i<this->byteStringLen; i++)
-    {
-      c1 = this->string[i*2];
-      if(i*2+1 < this->length)
-        c2 = this->string[i*2+1];
-      else
-        c2 = '0';
-      this->byteString[i] = hexachartochar(c1)*16+hexachartochar(c2);
-    }
+    this->byteString = (unsigned char*) this->getCharString();
   }
   return this->byteString;
+}
+
+char * StringObject::getCharString()
+{
+  if(this->charString == null)
+  {
+    if(this->isHexa && this->byteStringLen != 0)
+    {
+      this->charString = new char[this->byteStringLen];
+      char c1,c2;
+      for(int i = 0; i<this->byteStringLen; i++)
+      {
+        c1 = this->string[i*2];
+        if(i*2+1 < this->length)
+          c2 = this->string[i*2+1];
+        else
+          c2 = '0';
+        this->charString[i] = hexachartochar(c1)*16+hexachartochar(c2);
+      }
+    }
+    else
+    {
+      this->charString = this->string;
+    }
+  }
+  return this->charString;
+}
+
+char * StringObject::getHexaString()
+{
+  if(this->hexaString == null)
+  {
+    if(!this->isHexa && this->hexaStringLen != 0)
+    {
+      this->hexaString = new char[this->hexaStringLen];
+      char c1;
+      for(int i = 0; i<this->hexaStringLen; i+=2)
+      {
+        c1 = this->string[i];
+        this->hexaString[i] = numToHexaChar(c1/16);
+        this->hexaString[i+1] = numToHexaChar(c1%16);
+      }
+    }
+    else
+    {
+      this->hexaString = this->string;
+    }
+  }
+  return this->hexaString;
 }
