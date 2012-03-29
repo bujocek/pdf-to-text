@@ -28,7 +28,7 @@ private:
   Method that processes StringObject and returns text.
   */
   wchar_t * processStringObject(StringObject * stringObject);
-  wchar_t * convertHexaString(StringObject * string, ToUnicodeCMap * cmap);
+  wchar_t * convertStringWithToUnicode(StringObject * string, ToUnicodeCMap * cmap);
   void convertUTFtoWchar (char * utf16be,  size_t * wcharlen, wchar_t * wchar);
 
 public:

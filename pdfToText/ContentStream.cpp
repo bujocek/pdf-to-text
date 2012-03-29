@@ -215,7 +215,7 @@ wchar_t * charToWchar(char * source)
   return wcstring;
 }
 
-wchar_t * ContentStream::convertHexaString(StringObject * string, ToUnicodeCMap * cmap)
+wchar_t * ContentStream::convertStringWithToUnicode(StringObject * string, ToUnicodeCMap * cmap)
 {
   int maxCharSize = 4;
   unsigned char * charCode = new unsigned char[maxCharSize];
@@ -289,18 +289,9 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
     return null;
   }
 
-  //TODO: unify processing hexa and char string
-  
   if(this->currentCMap != null) //try toUnicode map
   {
-    if(stringObject->isHexa)
-    {
-      return convertHexaString(stringObject, this->currentCMap);  
-    }
-    else
-    {
-      return charToWchar(stringObject->string);
-    }
+    return convertStringWithToUnicode(stringObject, this->currentCMap);
   }
   else
   {
