@@ -215,6 +215,11 @@ wchar_t * charToWchar(char * source)
   return wcstring;
 }
 
+void ContentStream::convertUTFtoWchar (char * utf16be,  size_t * wcharlen, wchar_t * wchar)
+{
+  //TODO: move converting code from convertStringWithToUnicode to this method
+}
+
 wchar_t * ContentStream::convertStringWithToUnicode(StringObject * string, ToUnicodeCMap * cmap)
 {
   int maxCharSize = 4;
@@ -281,6 +286,13 @@ wchar_t * ContentStream::convertStringWithToUnicode(StringObject * string, ToUni
   return result;
 }
 
+wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string, char * encoding)
+{
+  //TODO:Finish processing basic encodings
+  //use this->currentFont and specified encoding to obtain string unicode text
+  return L"";
+}
+
 wchar_t * ContentStream::processStringObject(StringObject * stringObject)
 {
   if(stringObject == null)
@@ -301,9 +313,34 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
     }
     if(this->currentFont != null) //try some basic encoding
     {
-      //TODO:Finish processing basic encodings
-      PdfObject * encoding = this->currentFont->getObject("/Encoding");
       cerr << "\nContentStream: Basic encoding still not implemented.\n";
+      
+      PdfObject * encoding = this->currentFont->getObject("/Encoding");
+      if(encoding->objectType == PdfObject::TYPE_NAME)
+      {
+        NameObject * encodingName = (NameObject*) encoding;
+        if(strcmp(encodingName->name, "MacRomanEncoding") == 0)
+        {
+          return convertWithBaseEncoding(stringObject, encoding_MacRoman);
+        }
+        else if(strcmp(encodingName->name, "MacExpertEncoding") == 0)
+        {
+          return convertWithBaseEncoding(stringObject, encoding_MacExpert);
+        }
+        else if(strcmp(encodingName->name, "WinAnsiEncoding") == 0)
+        {
+          return convertWithBaseEncoding(stringObject, encoding_WinAnsi);
+        }
+        else
+        {
+          cerr << "\nContentStream: Unsupported encoding. Using simple conversion.\n";
+          return charToWchar(stringObject->getCharString());
+        }
+      }
+      else
+      {
+        cerr << "\nUnsupported object instead of encoding name.\n";
+      }
       return L"|-- Unknown string --|";
     }
     else
