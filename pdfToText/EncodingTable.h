@@ -8,4 +8,5 @@
   extern const char *encoding_Expert[];
   extern const char *encoding_Symbol[];
   extern const char *encoding_ZapfDingbats[];
+  extern const char *glyphlist[][2];
 #endif

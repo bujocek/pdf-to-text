@@ -175,6 +175,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\glyphlist.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\lib\libcharset1.def"
 				>
 			</File>

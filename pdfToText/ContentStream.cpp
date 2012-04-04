@@ -286,7 +286,7 @@ wchar_t * ContentStream::convertStringWithToUnicode(StringObject * string, ToUni
   return result;
 }
 
-wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string, char * encoding)
+wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string, char * encoding[])
 {
   //TODO:Finish processing basic encodings
   //use this->currentFont and specified encoding to obtain string unicode text
