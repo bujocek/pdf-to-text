@@ -166,7 +166,7 @@ int StringObject::toNum()
   if(this->isHexa)
   {
     int result = 0;
-    int len = this->byteStringLen;
+    int len = this->getByteStringLen();
     for(int i = 0; i<len; i++)
     {
       result *= 16;
