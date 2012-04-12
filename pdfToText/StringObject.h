@@ -14,6 +14,22 @@ private:
   char * hexaString;
   char * charString;
   long numVal;
+
+  /**
+  length of byte string
+  */
+  int byteStringLen;
+  
+  /**
+  length of char string
+  */
+  int charStringLen;
+
+  /**
+  length of hexa string
+  */
+  int hexaStringLen;
+
 public:
   
   /**
@@ -30,16 +46,6 @@ public:
   length of the string
   */
   int length;
-
-  /**
-  length of byte string and char string
-  */
-  int byteStringLen;
-
-  /**
-  length of hexa string
-  */
-  int hexaStringLen;
 
   /**
   Constructor.<br>
@@ -60,6 +66,11 @@ public:
   */
   int toNum();
   
+  /**
+  length of byte string
+  */
+  int getByteStringLen();
+
   /**
   Converts this string to unsigned char string (byte string)
   \return This string converted to bytes.

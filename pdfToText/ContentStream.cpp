@@ -225,11 +225,11 @@ wchar_t * ContentStream::convertStringWithToUnicode(StringObject * string, ToUni
   int maxCharSize = 4;
   unsigned char * charCode = new unsigned char[maxCharSize];
   wchar_t * result = null;
-  wchar_t* newbytes = new wchar_t[string->byteStringLen];
+  wchar_t* newbytes = new wchar_t[string->getByteStringLen()];
   int pos,i,currentLen;
   currentLen = 0;
   i=0;
-  for (pos=0;pos<string->byteStringLen;pos++)
+  for (pos=0;pos<string->getByteStringLen();pos++)
   {
     //get charcode
     charCode[i] = string->getByteString()[pos];
@@ -244,7 +244,7 @@ wchar_t * ContentStream::convertStringWithToUnicode(StringObject * string, ToUni
     	  unsigned char * utf16be = stringCharCode->getByteString();
           
     	  size_t iconv_value;
-	      size_t len =  stringCharCode->byteStringLen;
+        size_t len =  stringCharCode->getByteStringLen();
 	      size_t length = len*sizeof(wchar_t);
 	      size_t ls = length;
 	      if (!len) 
@@ -286,10 +286,76 @@ wchar_t * ContentStream::convertStringWithToUnicode(StringObject * string, ToUni
   return result;
 }
 
-wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string, char * encoding[])
+StringObject * charNameToUTFString(const char * charName)
 {
-  //TODO:Finish processing basic encodings
-  //use this->currentFont and specified encoding to obtain string unicode text
+  if(charName == null)
+    return null;
+  int len = 4280; //TODO: count glyph list len
+  char * _ek = null;
+  for (int i = 0; i < len; i++)
+  {
+    if(strcmp(charName, glyphlist[i][0]) == 0)
+      return new StringObject(&_ek, (char*) glyphlist[i][1]);
+  }
+  return null;
+}
+
+wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string,const char * encoding[])
+{
+  unsigned char charCode;
+  wchar_t * result = null;
+  wchar_t* newbytes = new wchar_t[string->getByteStringLen()];
+  int pos,currentLen;
+  currentLen = 0;
+  for (pos=0;pos<string->getByteStringLen();pos++)
+  {
+    //get charcode
+    charCode = string->getByteString()[pos];
+    
+    //map charcode and return string object
+    const char * charName = encoding[charCode];
+    StringObject * stringCharCode = charNameToUTFString(charName);
+    
+    //convert from UTF-16BE to wchar (unicode)
+    if(stringCharCode != null)
+    {
+  	  unsigned char * utf16be = stringCharCode->getByteString();
+        
+  	  size_t iconv_value;
+      size_t len =  stringCharCode->getByteStringLen();
+      size_t length = len*sizeof(wchar_t);
+      size_t ls = length;
+      if (!len) 
+      {
+	      cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
+	      continue;
+      };
+      wchar_t * outbuf = new wchar_t(len);
+      char * outbufch = (char*)outbuf;
+#ifdef _WIN32 || _WIN64
+      iconv_value = iconv (conv_desc, (const char**) &utf16be,
+		      & len, &outbufch , &length);
+#else
+    	  iconv_value = iconv (conv_desc, (char**) &utf16be,
+		      & len, &outbufch , &length);
+
+#endif
+      /* Handle failures. */
+      if (iconv_value == (size_t) -1)
+      {
+	      cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
+      }
+      memcpy(&newbytes[currentLen], outbuf, ls-length);
+      currentLen += (ls-length)/sizeof(wchar_t);
+    }
+  }
+  //push to result
+  result = new wchar_t[currentLen+1];
+  wcsncpy(result, newbytes, currentLen);
+  delete[] newbytes;
+  result[currentLen] = L'\0';  
+  return result;
+
   return L"";
 }
 
@@ -313,10 +379,8 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
     }
     if(this->currentFont != null) //try some basic encoding
     {
-      cerr << "\nContentStream: Basic encoding still not implemented.\n";
-      
       PdfObject * encoding = this->currentFont->getObject("/Encoding");
-      if(encoding->objectType == PdfObject::TYPE_NAME)
+      if(encoding != null && encoding->objectType == PdfObject::TYPE_NAME)
       {
         NameObject * encodingName = (NameObject*) encoding;
         if(strcmp(encodingName->name, "MacRomanEncoding") == 0)
@@ -339,7 +403,8 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
       }
       else
       {
-        cerr << "\nUnsupported object instead of encoding name.\n";
+        cerr << "\nContentStream: Unsupported encoding. Using simple conversion.\n";
+        return charToWchar(stringObject->getCharString());
       }
       return L"|-- Unknown string --|";
     }

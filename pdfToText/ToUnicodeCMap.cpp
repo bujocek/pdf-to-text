@@ -102,7 +102,7 @@ bool ToUnicodeCMap::isCharCode(unsigned char * charCode, int len)
   list <pair<StringObject*, StringObject*> >::iterator cri = this->codeRanges.begin();
   for ( ;cri != this->codeRanges.end(); cri++)
   {
-    if(cri->first->byteStringLen == len)
+    if(cri->first->getByteStringLen() == len)
     {
       bool isInRange = true;
       for (int i=0; i<len; i++)
@@ -170,7 +170,7 @@ StringObject * ToUnicodeCMap::getUTFChar(unsigned char * charCode, int len)
         StringObject * string = (StringObject*) range->object;
         int numResult = string->toNum();
         numResult += increment;
-        int len = string->byteStringLen*2;
+        int len = string->getByteStringLen()*2;
         char * hexaString = new char[len+3];
         hexaString[0] = '<';
         hexaString[len+1] = '>';
