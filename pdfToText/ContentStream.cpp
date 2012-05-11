@@ -206,12 +206,15 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
   return result;
 }
 
-wchar_t * charToWchar(char * source)
+wchar_t * charToWchar(char * source, int len = -1)
 {
-  size_t origsize = strlen(source) + 1;
-  const size_t newsize = origsize * sizeof(wchar_t);
+  size_t origsize = len;
+  if(origsize < 0)
+    origsize = strlen(source);
+  const size_t newsize = (origsize+1) * sizeof(wchar_t);
   wchar_t * wcstring = new wchar_t[newsize];
   mbstowcs(wcstring, source, origsize);
+  wcstring[origsize] = 0;
   return wcstring;
 }
 
@@ -239,7 +242,12 @@ wchar_t * ContentStream::convertStringWithToUnicode(StringObject * string, ToUni
       //map charcode and return string object
       StringObject * stringCharCode = cmap->getUTFChar(charCode, i);
       //convert from UTF-16BE to wchar (unicode)
-      if(stringCharCode != null)
+      if(stringCharCode == null)
+      {
+        cerr << "\nContentStream:Couldn't get utf16be char from ToUnicode cmap.\n";
+		    continue;
+      }
+      else
       {
     	  unsigned char * utf16be = stringCharCode->getByteString();
           
@@ -266,6 +274,7 @@ wchar_t * ContentStream::convertStringWithToUnicode(StringObject * string, ToUni
 	      if (iconv_value == (size_t) -1)
 	      {
 		      cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
+          continue;
 	      }
 	      memcpy(&newbytes[currentLen], outbuf, ls-length);
 	      currentLen += (ls-length)/sizeof(wchar_t);
@@ -290,7 +299,7 @@ StringObject * charNameToUTFString(const char * charName)
 {
   if(charName == null)
     return null;
-  int len = 4280; //TODO: count glyph list len
+  int len = GLYPHLIST_LEN;
   char * _ek = null;
   for (int i = 0; i < len; i++)
   {
@@ -314,39 +323,54 @@ wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string,const cha
     
     //map charcode and return string object
     const char * charName = encoding[charCode];
-    StringObject * stringCharCode = charNameToUTFString(charName);
     
-    //convert from UTF-16BE to wchar (unicode)
-    if(stringCharCode != null)
+    if(charName == null)
     {
-  	  unsigned char * utf16be = stringCharCode->getByteString();
-        
-  	  size_t iconv_value;
-      size_t len =  stringCharCode->getByteStringLen();
-      size_t length = len*sizeof(wchar_t);
-      size_t ls = length;
-      if (!len) 
+      cerr << "\nContentStream: Couldn't map character code to character name using some base encoding.\n";
+      continue;
+    }
+    else
+    {
+      StringObject * stringCharCode = charNameToUTFString(charName);
+      
+      //convert from UTF-16BE to wchar (unicode)
+      if(stringCharCode == null)
       {
-	      cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
-	      continue;
-      };
-      wchar_t * outbuf = new wchar_t(len);
-      char * outbufch = (char*)outbuf;
-#ifdef _WIN32 || _WIN64
-      iconv_value = iconv (conv_desc, (const char**) &utf16be,
-		      & len, &outbufch , &length);
-#else
-    	  iconv_value = iconv (conv_desc, (char**) &utf16be,
-		      & len, &outbufch , &length);
-
-#endif
-      /* Handle failures. */
-      if (iconv_value == (size_t) -1)
-      {
-	      cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
+        cerr << "\nContentStream: Couldn't map character name to unicode value using glyph list.\n";
+        continue;
       }
-      memcpy(&newbytes[currentLen], outbuf, ls-length);
-      currentLen += (ls-length)/sizeof(wchar_t);
+      else
+      {
+  	    unsigned char * utf16be = stringCharCode->getByteString();
+          
+  	    size_t iconv_value;
+        size_t len =  stringCharCode->getByteStringLen();
+        size_t length = len*sizeof(wchar_t);
+        size_t ls = length;
+        if (!len) 
+        {
+	        cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
+	        continue;
+        };
+        wchar_t * outbuf = new wchar_t(len);
+        char * outbufch = (char*)outbuf;
+  #ifdef _WIN32 || _WIN64
+        iconv_value = iconv (conv_desc, (const char**) &utf16be,
+		        & len, &outbufch , &length);
+  #else
+    	    iconv_value = iconv (conv_desc, (char**) &utf16be,
+		        & len, &outbufch , &length);
+
+  #endif
+        /* Handle failures. */
+        if (iconv_value == (size_t) -1)
+        {
+	        cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
+          continue;
+        }
+        memcpy(&newbytes[currentLen], outbuf, ls-length);
+        currentLen += (ls-length)/sizeof(wchar_t);
+      }
     }
   }
   //push to result
@@ -355,8 +379,6 @@ wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string,const cha
   delete[] newbytes;
   result[currentLen] = L'\0';  
   return result;
-
-  return L"";
 }
 
 wchar_t * ContentStream::processStringObject(StringObject * stringObject)
@@ -369,29 +391,28 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
 
   if(this->currentCMap != null) //try toUnicode map
   {
-    return convertStringWithToUnicode(stringObject, this->currentCMap);
+    if(stringObject->isHexa)
+      return convertStringWithToUnicode(stringObject, this->currentCMap);
+    else  //TODO: find out why literar strings are not in ToUnicode map
+      return charToWchar((char*)stringObject->getByteString(), stringObject->getByteStringLen());
   }
   else
   {
-    if(logEnabled)
-    {
-      clog << "\nContentStream: No ToUnicode map found for decoding string. Trying other methods.\n";
-    }
     if(this->currentFont != null) //try some basic encoding
     {
       PdfObject * encoding = this->currentFont->getObject("/Encoding");
       if(encoding != null && encoding->objectType == PdfObject::TYPE_NAME)
       {
         NameObject * encodingName = (NameObject*) encoding;
-        if(strcmp(encodingName->name, "MacRomanEncoding") == 0)
+        if(strcmp(encodingName->name, "/MacRomanEncoding") == 0)
         {
           return convertWithBaseEncoding(stringObject, encoding_MacRoman);
         }
-        else if(strcmp(encodingName->name, "MacExpertEncoding") == 0)
+        else if(strcmp(encodingName->name, "/MacExpertEncoding") == 0)
         {
           return convertWithBaseEncoding(stringObject, encoding_MacExpert);
         }
-        else if(strcmp(encodingName->name, "WinAnsiEncoding") == 0)
+        else if(strcmp(encodingName->name, "/WinAnsiEncoding") == 0)
         {
           return convertWithBaseEncoding(stringObject, encoding_WinAnsi);
         }

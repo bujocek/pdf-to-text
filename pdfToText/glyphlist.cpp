@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "EncodingTable.h"
 
+//when updated than the GLYPHLIST_LEN in EncodingTable.h need to be also updated
 const char * glyphlist[][2] = {
   {"A", "<0041>"},
   {"AE", "<00C6>"},

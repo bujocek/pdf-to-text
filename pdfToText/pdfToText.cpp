@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
   ptm = localtime(&timer);
   startClock = clock();
 	
-	//TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=5
+	//TODO: Get logEnabled value from command line parameter (http://code.google.com/p/pdf-to-text/issues/detail?id=5)
 	logEnabled = true;
 	if(logEnabled)
 	{
@@ -57,6 +57,9 @@ int main(int argc, char* argv[])
       cout << (argv[ii]) << " ";
 		}
 	}
+
+  int fromPage = 1;
+  int toPage = 0;
 
 	if(argc != 3) //program inputFile oputputFile
 	{
@@ -207,6 +210,26 @@ int main(int argc, char* argv[])
   list<PageTreeNode*> pageList;
   list<PageTreeNode*>::iterator pageListIterator;
   pageTreeRoot->createPageList(&pageList);
+  
+  //skip specified pages
+  if(toPage == 0)
+    toPage = pageList.size();
+  if((toPage - fromPage + 1) > 0 && (toPage - fromPage + 1) <= pageList.size())
+  {
+    int ii;
+    int endCut = pageList.size() - toPage;
+    for(ii = 0; ii<endCut; ii++)
+      pageList.pop_back();
+    for(ii = 1; ii<fromPage; ii++)
+      pageList.pop_front();
+  }
+  else
+  {
+    cerr << "\npdfToText: Wrong page range specified in arguments.\n";
+    end();
+    return 1;
+  }
+
   if(logEnabled)
     clog<<"\nPage tree construction finished. \nFound " << pageList.size() << " pages.";
 

@@ -25,7 +25,6 @@ ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
     io->processAsStream();
   }
   
-  //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=15
   if(this->indirectObject->unencodedStream != null)
   {
     char * stream = this->indirectObject->unencodedStream;
@@ -133,7 +132,7 @@ StringObject * ToUnicodeCMap::getUTFChar(unsigned char * charCode, int len)
   {
     //try to find range for char
     BFRange * range = null;
-    int endSearch = codeRangeMapVector.size();
+    int endSearch = codeRangeMapVector.size()-1;
     if(endSearch > 0)
     {
       int beginSearch = 0;
@@ -159,7 +158,7 @@ StringObject * ToUnicodeCMap::getUTFChar(unsigned char * charCode, int len)
     }
     if(range == null)
     {
-      cerr << "\nCouldn't map character properly.\n";
+      //Couldn't map character properly.
       return null;
     }
     else
@@ -241,7 +240,7 @@ StringObject * ToUnicodeCMap::getUTFChar(unsigned char * charCode, int len)
       }
       else
       {
-        cerr << "\nCouldn't find utf value in found range.\n";
+        //Couldn't find utf value in found range.
         return null;
       }
       // add result to char map - so there is no need to create the string again next time the char is used
