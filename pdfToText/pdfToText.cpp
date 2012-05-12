@@ -27,30 +27,12 @@ ofstream errStream ("errorfile.txt", ios::app);
 streambuf *clogBack, *cerrBack;
 iconv_t conv_desc = (iconv_t) -1;
 
-int main(int argc, char* argv[])
+int _main(int argc, char* argv[])
 {
-  time_t timer;
-  struct tm *ptm;
-  time(&timer);
-  ptm = localtime(&timer);
-  startClock = clock();
-	
-	//TODO: Get logEnabled value from command line parameter (http://code.google.com/p/pdf-to-text/issues/detail?id=5)
-	logEnabled = true;
-	if(logEnabled)
+  if(logEnabled)
 	{
-		clogBack = clog.rdbuf(logStream.rdbuf());
-    clog << "\n\n-------------------\n Start program " << ptm->tm_mday << "." << ptm->tm_mon + 1 << "." << ptm->tm_year + 1900
-      << " " << ptm->tm_hour << ":" << ptm->tm_min << ":" << ptm->tm_sec << "\n--------------" << endl;
-	}
-	cerrBack = cerr.rdbuf(errStream.rdbuf());
-  cerr << "\n\n-------------------\n Start program " << ptm->tm_mday << "." << ptm->tm_mon+1 << "." << ptm->tm_year + 1900
-    << " " << ptm->tm_hour << ":" << ptm->tm_min << ":" << ptm->tm_sec << endl;
-
-	if(logEnabled)
-	{
-		clog << "\nProgram launched with parameters:\n";
-    cout << "\nProgram launched with parameters:\n";
+		clog << "\nProgram launched with arguments:\n";
+    cout << "\nProgram launched with arguments:\n";
 		for(int ii = 0; ii < argc; ii++)
 		{
 			clog << (argv[ii]) << " ";
@@ -60,12 +42,13 @@ int main(int argc, char* argv[])
 
   int fromPage = 1;
   int toPage = 0;
+  char * usageString = "\npdfToText: Wrong arguments. Usage: pdfToText(.exe) [input pdf file] [otput txt file] [optional args]\n\
+                       Optional arguments are: -pfrom [page number], -pto [page number]\n";
 
-	if(argc != 3) //program inputFile oputputFile
+  if(argc < 3 || argc > 7) //program inputFile oputputFile [optional]
 	{
-		cerr << "\npdfToText: Wrong arguments. Usage: pdfToText [input pdf file] [otput txt file]\n";
-		cout << "\npdfToText: Wrong arguments. Usage: pdfToText(.exe) [input pdf file] [otput txt file]\n";
-		end();
+		cerr << "\npdfToText: Wrong number of arguments.\n";
+		cout << usageString;
 		return 1;
 	}
 		
@@ -79,7 +62,6 @@ int main(int argc, char* argv[])
 	{
 		cerr << "\npdfToText: Could not open input file";
     cout << "\nCould not open input file.";
-		end();
 		return 2; //files couldnt be opened
 	}
 	filei.clear();
@@ -94,15 +76,48 @@ int main(int argc, char* argv[])
 	{
 		cerr << "\npdfToText: Could not open output file";
     cout << "\nCould not open output file";
-		end();
 		return 2; //files couldnt be opened
 	}
+
+  //Process optional arguments
+  for(int argindex = 3; argindex < argc; argindex++)
+  {
+    if(strcmp(argv[argindex], "-pfrom") == 0)
+    {
+      if(argindex+1 < argc)
+      {
+        argindex++;
+        long int pfrom = strtol(argv[argindex], null, 10);
+        if(pfrom > 0 && pfrom < INT_MAX)
+        {
+          fromPage = (int) pfrom;
+          continue;
+        }
+      }
+    }
+    if(strcmp(argv[argindex], "-pto") == 0)
+    {
+      if(argindex+1 < argc)
+      {
+        argindex++;
+        long int pto = strtol(argv[argindex], null, 10);
+        if(pto > 0 && pto < INT_MAX)
+        {
+          toPage = (int) pto;
+          continue;
+        }
+      }
+    }
+    cerr << "\npdfToText: Wrong arguments.\n";
+    cout << usageString;
+    return 1;
+  }
+
 	conv_desc = iconv_open ("WCHAR_T", "UTF-16BE");
 	if (conv_desc == (iconv_t)-1)
 	{
 		/* Initialization failure. */
 		cerr << "\npdfToText: Iconv init failed.\n";
-		end();
 		return 5;
 	}
 	//-----------------------------------------------
@@ -147,7 +162,6 @@ int main(int argc, char* argv[])
   if(objectMap->size() <= 0)
   {
     cerr << "\npdfToText: No objects found in reference table.\n";
-    end();
     return 4;
   }
 	
@@ -175,7 +189,6 @@ int main(int argc, char* argv[])
   if(firstRefTable == null || firstRefTable->getXRef() == null || firstRefTable->trailerDictionary == null || firstRefTable->trailerDictionary->getObject("/Root") == null)
   {
     cerr<<"\npdfToText: Couldn't find Document Catalog in PDF file.\n";
-    end();
     return 3;
   }
   IndirectObject * indirectObject = (IndirectObject*) firstRefTable->trailerDictionary->getObject("/Root");
@@ -183,7 +196,6 @@ int main(int argc, char* argv[])
   if(documentCatalogDictionary == null || documentCatalogDictionary->objectType != PdfObject::TYPE_DICTIONARY)
   {
     cerr<<"\npdfToText: Problem with reading Document Catalog in PDF file.\n";
-    end();
     return 3;
   }
   if(logEnabled)
@@ -191,7 +203,6 @@ int main(int argc, char* argv[])
   if(documentCatalogDictionary->getObject("/Pages") == null)
   {
     cerr<<"\npdfToText: Couldn't find page tree in Document Catalog in PDF file.\n";
-    end();
     return 3;
   }
   indirectObject = (IndirectObject*) documentCatalogDictionary->getObject("/Pages");
@@ -199,7 +210,6 @@ int main(int argc, char* argv[])
   if(pageTreeRootDictionary == null || pageTreeRootDictionary->objectType != PdfObject::TYPE_DICTIONARY)
   {
     cerr<<"\npdfToText: Problem with reading Page Tree root node dictionary in PDF file.\n";
-    end();
     return 3;
   }
   if(logEnabled)
@@ -226,7 +236,6 @@ int main(int argc, char* argv[])
   else
   {
     cerr << "\npdfToText: Wrong page range specified in arguments.\n";
-    end();
     return 1;
   }
 
@@ -249,7 +258,6 @@ int main(int argc, char* argv[])
   else
   {
     cerr<<"\nNo pages found in a page tree. Nothing to extract.\n";
-    end();
     return 3;
   }
   
@@ -263,8 +271,32 @@ int main(int argc, char* argv[])
     (*pageListIterator)->getText(fileo);
   }
   fclose(fileo);
-	end();
 	return 0;
+}
+
+int main(int argc, char* argv[])
+{
+  time_t timer;
+  struct tm *ptm;
+  time(&timer);
+  ptm = localtime(&timer);
+  startClock = clock();
+	
+	//TODO: Get logEnabled value from command line parameter (http://code.google.com/p/pdf-to-text/issues/detail?id=5)
+	logEnabled = true;
+	if(logEnabled)
+	{
+		clogBack = clog.rdbuf(logStream.rdbuf());
+    clog << "\n\n-------------------\n Start program " << ptm->tm_mday << "." << ptm->tm_mon + 1 << "." << ptm->tm_year + 1900
+      << " " << ptm->tm_hour << ":" << ptm->tm_min << ":" << ptm->tm_sec << "\n--------------" << endl;
+	}
+	cerrBack = cerr.rdbuf(errStream.rdbuf());
+  cerr << "\n\n-------------------\n Start program " << ptm->tm_mday << "." << ptm->tm_mon+1 << "." << ptm->tm_year + 1900
+    << " " << ptm->tm_hour << ":" << ptm->tm_min << ":" << ptm->tm_sec << endl;
+  
+  int result = _main(argc, argv);
+  end();
+  return result;
 }
 
 void end()
