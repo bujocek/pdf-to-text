@@ -222,7 +222,7 @@ bool IndirectObject::processAsStream()
 					}
           
           //Find used filter for the stream
-          PdfObject * filterObject = this->streamDictionary->getObject("/Filter");
+          PdfObject * filterObject = this->streamDictionary->getObject("/Filter", true);
           if(filterObject == null)
 					{
 					  //than it is unencoded stream (not so common case)

@@ -57,5 +57,5 @@ public:
   than follows reference and returns the IndirectObject the reference is pointing to.
   Otherwise returns PdfObject from map.
   */
-  PdfObject * getObject(char * mapKey);
+  PdfObject * getObject(char * mapKey, bool followToFirstObject = false);
 };

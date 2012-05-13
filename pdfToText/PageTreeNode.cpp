@@ -185,10 +185,7 @@ DictionaryObject * PageTreeNode::getFonts()
   }
   else
   {
-    PdfObject * fontsObject = resourcesDictionary->getObject("/Font");
-    
-    if(fontsObject != null && fontsObject->objectType == PdfObject::TYPE_INDIRECT_OBJECT)
-      fontsObject = ((IndirectObject*) fontsObject)->getFirstObject();
+    PdfObject * fontsObject = resourcesDictionary->getObject("/Font", true);
     
     if(fontsObject != null && fontsObject->objectType == PdfObject::TYPE_DICTIONARY)
       this->fonts = (DictionaryObject*) fontsObject;

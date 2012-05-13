@@ -73,7 +73,7 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
           nameObject = streamObjectMap[index-2];
         else if(prevStream != null && prevStream->streamObjectMap.size() >= 2-index)
         {
-          nameObject = prevStream->streamObjectMap[prevStream->streamObjectMap.size() - 3 + index];
+          nameObject = prevStream->streamObjectMap[prevStream->streamObjectMap.size() - 2 + index];
         }
         else
         {
@@ -85,11 +85,9 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
           this->currentFont = null;
           if(fonts != null)
           {
-            PdfObject * font = fonts->getObject(((NameObject*)nameObject)->name);
+            PdfObject * font = fonts->getObject(((NameObject*)nameObject)->name, true);
             if(font != null && font->objectType == PdfObject::TYPE_DICTIONARY)
               this->currentFont = (DictionaryObject*)font;
-            if(font != null && font->objectType == PdfObject::TYPE_INDIRECT_OBJECT)
-              this->currentFont = (DictionaryObject*)((IndirectObject*)font)->getFirstObject();
             if(this->currentFont == null)
               cerr << "\nCouldn't get font specified by name before 'Tf' oprerator\n";
             else //try to get /ToUnicode map
@@ -121,9 +119,9 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
         PdfObject * stringObject;
         if(index >= 1)
           stringObject = streamObjectMap[index-1];
-        else if(prevStream != null && prevStream->streamObjectMap.size() >= 1-index)
+        else if(prevStream != null && prevStream->streamObjectMap.size() >= 1)
         {
-          stringObject = prevStream->streamObjectMap[prevStream->streamObjectMap.size() - 2 + index];
+          stringObject = prevStream->streamObjectMap[prevStream->streamObjectMap.size() - 1 + index];
         }
         else
         {
@@ -143,9 +141,9 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
         PdfObject * stringObject;
         if(index >= 1)
           stringObject = streamObjectMap[index-1];
-        else if(prevStream != null && prevStream->streamObjectMap.size() >= 1-index)
+        else if(prevStream != null && prevStream->streamObjectMap.size() >= 1)
         {
-          stringObject = prevStream->streamObjectMap[prevStream->streamObjectMap.size() - 2 + index];
+          stringObject = prevStream->streamObjectMap[prevStream->streamObjectMap.size() - 1 + index];
         }
         else
         {
@@ -164,7 +162,7 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
         PdfObject * arrayObject;
         if(index >= 1)
           arrayObject = streamObjectMap[index-1];
-        else if(prevStream != null && prevStream->streamObjectMap.size() >= 1-index)
+        else if(prevStream != null && prevStream->streamObjectMap.size() >= 1)
         {
           arrayObject = prevStream->streamObjectMap[prevStream->streamObjectMap.size() - 1 + index];
         }
@@ -208,13 +206,15 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
 
 wchar_t * charToWchar(char * source, int len = -1)
 {
-  size_t origsize = len;
-  if(origsize < 0)
+  size_t origsize;
+  if(len < 0)
     origsize = strlen(source);
+  else
+    origsize = len;
   const size_t newsize = (origsize+1) * sizeof(wchar_t);
   wchar_t * wcstring = new wchar_t[newsize];
   mbstowcs(wcstring, source, origsize);
-  wcstring[origsize] = 0;
+  wcstring[origsize] = L'\0';
   return wcstring;
 }
 
@@ -309,7 +309,7 @@ StringObject * charNameToUTFString(const char * charName)
   return null;
 }
 
-wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string,const char * encoding[])
+wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string,const char * encoding[], char * differences[] = null)
 {
   unsigned char charCode;
   wchar_t * result = null;
@@ -393,14 +393,56 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
   {
     if(stringObject->isHexa)
       return convertStringWithToUnicode(stringObject, this->currentCMap);
-    else  //TODO: find out why literar strings are not in ToUnicode map
+    else  //TODO: find out why literal strings are not in ToUnicode map
       return charToWchar((char*)stringObject->getByteString(), stringObject->getByteStringLen());
   }
   else
   {
     if(this->currentFont != null) //try some basic encoding
     {
-      PdfObject * encoding = this->currentFont->getObject("/Encoding");
+      char ** differences = null;
+      PdfObject * encoding = this->currentFont->getObject("/Encoding", true);
+      if(encoding != null && encoding->objectType == PdfObject::TYPE_DICTIONARY)
+      {
+        //TODO: get diffs from map
+        PdfObject * diffs;
+        diffs = ((DictionaryObject*) encoding)->getObject("/Differences", true);
+        if(diffs != null)
+        {
+          if(diffs->objectType == PdfObject::TYPE_ARRAY)
+          {
+            ArrayObject * diffsArr = (ArrayObject*) diffs;
+            differences = new char*[256];  //TODO: check for pee!!!!!!!!!!!!!!!!!!!!!!!!!!
+            int di;
+            for(di = 0; di < 256; di++)
+            {
+              differences[di] = null;
+            }
+            vector<PdfObject*>::iterator diffsArrIt = diffsArr->objectList.begin();
+            int charCode = 0;
+            for(; diffsArrIt != diffsArr->objectList.end(); diffsArrIt++)
+            {
+              if((*diffsArrIt)->objectType == PdfObject::TYPE_NUMBER)
+              {
+                charCode = (int) ((NumberObject*)(*diffsArrIt))->number;
+              }
+              if((*diffsArrIt)->objectType == PdfObject::TYPE_NAME)
+              {
+                int nameLen = strlen(((NameObject*)(*diffsArrIt))->name);
+                char * diffName = new char[nameLen]; //we dont need to add "+1" because we will remove initial '/' char
+                strcpy(diffName, ((NameObject*)(*diffsArrIt))->name+1);
+                differences[charCode] = diffName;
+              }
+            }
+            //TODO: set diffs to map
+          }
+          else
+          {
+            cerr << "\nContentStream: unknown object for differences array.\n";
+          }
+        }
+        encoding = ((DictionaryObject*) encoding)->getObject("/BaseEncoding", true);
+      }
       if(encoding != null && encoding->objectType == PdfObject::TYPE_NAME)
       {
         NameObject * encodingName = (NameObject*) encoding;
@@ -424,8 +466,9 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
       }
       else
       {
-        cerr << "\nContentStream: Unsupported encoding. Using simple conversion.\n";
-        return charToWchar(stringObject->getCharString());
+        return convertWithBaseEncoding(stringObject, encoding_Standard);
+        //cerr << "\nContentStream: Unsupported encoding. Using simple conversion.\n";
+        //return charToWchar(stringObject->getCharString());
       }
       return L"|-- Unknown string --|";
     }

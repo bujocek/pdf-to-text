@@ -29,7 +29,7 @@ private:
   */
   wchar_t * processStringObject(StringObject * stringObject);
   wchar_t * convertStringWithToUnicode(StringObject * string, ToUnicodeCMap * cmap);
-  wchar_t * convertWithBaseEncoding(StringObject * string, const char * encoding[]);
+  wchar_t * convertWithBaseEncoding(StringObject * string, const char * encoding[], char * differences[]);
   void convertUTFtoWchar (char * utf16be,  size_t * wcharlen, wchar_t * wchar);
 
 public:

@@ -56,15 +56,28 @@ DictionaryObject::~DictionaryObject(void)
   //TODO: http://code.google.com/p/pdf-to-text/issues/detail?id=8
 }
 
-PdfObject * DictionaryObject::getObject(char * mapKey)
+PdfObject * DictionaryObject::getObject(char * mapKey, bool followToFirstObject)
 {
   PdfObject * po = this->dictionaryMap[mapKey];
   if(po == null)
     return null;
   else if(po->objectType == PdfObject::TYPE_INDIRECT_OBJECT_REFFERENCE)
-    return ((IndirectObjectReference*) po)->getIndirectObject();
+  {
+    IndirectObject * io = ((IndirectObjectReference*) po)->getIndirectObject();
+    if(followToFirstObject) 
+    {
+      if(io != null)
+      {
+        return io->getFirstObject();
+      }
+    }
+    else
+      return io;
+    
+  }
   else
     return po;
+  return null;
 }
 
 //DEPRECATED
