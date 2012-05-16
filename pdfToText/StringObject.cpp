@@ -229,7 +229,7 @@ unsigned char * StringObject::getByteString()
     if(this->isHexa)
     {
       this->byteStringLen = this->length/2 + this->length%2;
-      this->byteString = new unsigned char[this->byteStringLen];
+      this->byteString = new unsigned char[this->byteStringLen+1];
       char c1,c2;
       for(int i = 0; i < this->byteStringLen; i++)
       {
@@ -240,16 +240,19 @@ unsigned char * StringObject::getByteString()
           c2 = '0';
         this->byteString[i] = hexachartochar(c1)*16+hexachartochar(c2);
       }
+      this->byteString[this->byteStringLen] = 0;
     }
     else
     {
-      this->byteString = new unsigned char[this->length]; //assuming that byte string will be same or shorter than char string
+      this->byteString = new unsigned char[this->length+1]; //assuming that byte string will be same or shorter than char string
       int pos = 0;
       for(int j = 0; j < this->length; j++)
       {
         if(this->string[j] == '\\' )
         {
           j++;
+          if(j>=this->length)
+            break;
           if(this->string[j] >= '0' && this->string[j] <= '9') //is octal representation
           {
             unsigned char decNum = 0;
@@ -322,6 +325,7 @@ unsigned char * StringObject::getByteString()
         }
       }
       this->byteStringLen = pos;
+      this->byteString[pos] = 0;
     }
   }
   return this->byteString;
@@ -353,7 +357,7 @@ char * StringObject::getHexaString()
     {
       unsigned char * bytes = this->getByteString();
       this->hexaStringLen = this->getByteStringLen() * 2;
-      this->hexaString = new char[this->hexaStringLen];
+      this->hexaString = new char[this->hexaStringLen+1];
       char c1;
       for(int i = 0; i<this->hexaStringLen; i+=2)
       {
@@ -361,6 +365,7 @@ char * StringObject::getHexaString()
         this->hexaString[i] = numToHexaChar(c1/16);
         this->hexaString[i+1] = numToHexaChar(c1%16);
       }
+      this->hexaString[this->hexaStringLen] = 0;
     }
     else
     {

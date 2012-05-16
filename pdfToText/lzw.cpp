@@ -293,7 +293,7 @@ void LZWCodec::decode(const std::vector<byte>& encoded,
             byteMap[i] = byte(i);
 
     Dictionary dictionary(maxBits, codeStart);
-    StreamReader reader(encoded, encoded[1]==0 ? 2 : 2+byteMapSize);
+    StreamReader reader(encoded, encoded[1] == 0 ? 2 : 2+byteMapSize);
 
     while(true)
     {

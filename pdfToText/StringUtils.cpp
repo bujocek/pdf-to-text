@@ -118,5 +118,5 @@ void StringUtils::fGetLine(char * destination, int maxLength, ifstream& iFile)
       iFile.seekg(-1,ios_base::cur);
     }
   }
-  destination[i]=0;
+  destination[i] = 0;
 }

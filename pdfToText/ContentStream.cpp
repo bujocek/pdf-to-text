@@ -44,8 +44,8 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
   }
   DictionaryObject * fonts = this->page->getFonts();
   this->currentFont = null;
-  wchar_t * result = new wchar_t[this->indirectObject->unencodedStreamSize * sizeof(wchar_t)]; //assuming that the result string will not be bigger than whole stream
-  result[0] = 0;
+  wchar_t * result = new wchar_t[this->indirectObject->unencodedStreamSize * sizeof(wchar_t)+1]; //assuming that the result string will not be bigger than whole stream
+  result[0] = L'\0';
   char * usingString = this->indirectObject->unencodedStream;
 	int usingStringLen = this->indirectObject->unencodedStreamSize;
 
@@ -211,8 +211,9 @@ wchar_t * charToWchar(char * source, int len = -1)
     origsize = strlen(source);
   else
     origsize = len;
-  const size_t newsize = (origsize+1) * sizeof(wchar_t);
-  wchar_t * wcstring = new wchar_t[newsize];
+  //const size_t newsize = (origsize+1) * sizeof(wchar_t);
+  //wchar_t * wcstring = new wchar_t[newsize];
+  wchar_t * wcstring = new wchar_t[origsize+1];
   mbstowcs(wcstring, source, origsize);
   wcstring[origsize] = L'\0';
   return wcstring;
@@ -309,7 +310,7 @@ StringObject * charNameToUTFString(const char * charName)
   return null;
 }
 
-wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string,const char * encoding[], char * differences[] = null)
+wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string,const char * encoding[], char ** differences)
 {
   unsigned char charCode;
   wchar_t * result = null;
@@ -322,7 +323,12 @@ wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string,const cha
     charCode = string->getByteString()[pos];
     
     //map charcode and return string object
-    const char * charName = encoding[charCode];
+    const char * charName = null;
+    if(differences != null)
+      charName = differences[charCode];
+    
+    if(charName == null)
+      charName = encoding[charCode];
     
     if(charName == null)
     {
@@ -388,7 +394,7 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
     cerr << "\nContentStream: Can't proces null object in processStringObject method. Something went wrong.\n";
     return null;
   }
-
+  
   if(this->currentCMap != null) //try toUnicode map
   {
     if(stringObject->isHexa)
@@ -412,7 +418,7 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
           if(diffs->objectType == PdfObject::TYPE_ARRAY)
           {
             ArrayObject * diffsArr = (ArrayObject*) diffs;
-            differences = new char*[256];  //TODO: check for pee!!!!!!!!!!!!!!!!!!!!!!!!!!
+            differences = new char*[256];
             int di;
             for(di = 0; di < 256; di++)
             {
@@ -429,9 +435,17 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
               if((*diffsArrIt)->objectType == PdfObject::TYPE_NAME)
               {
                 int nameLen = strlen(((NameObject*)(*diffsArrIt))->name);
-                char * diffName = new char[nameLen]; //we dont need to add "+1" because we will remove initial '/' char
-                strcpy(diffName, ((NameObject*)(*diffsArrIt))->name+1);
-                differences[charCode] = diffName;
+                char * diffName = new char[nameLen+1]; 
+                strncpy(diffName, ((NameObject*)(*diffsArrIt))->name+1, nameLen-1); //we need to add "+1" because we want remove initial '/' char
+                diffName[nameLen] = 0;
+                if(charCode >= 0 && charCode < 256)
+                  differences[charCode] = diffName;
+                else
+                {
+                  cerr << "\nContentStream: Problem with creating differences array.\n";
+                  break;
+                }
+                charCode++;
               }
             }
             //TODO: set diffs to map
@@ -448,15 +462,15 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
         NameObject * encodingName = (NameObject*) encoding;
         if(strcmp(encodingName->name, "/MacRomanEncoding") == 0)
         {
-          return convertWithBaseEncoding(stringObject, encoding_MacRoman);
+          return convertWithBaseEncoding(stringObject, encoding_MacRoman, differences);
         }
         else if(strcmp(encodingName->name, "/MacExpertEncoding") == 0)
         {
-          return convertWithBaseEncoding(stringObject, encoding_MacExpert);
+          return convertWithBaseEncoding(stringObject, encoding_MacExpert, differences);
         }
         else if(strcmp(encodingName->name, "/WinAnsiEncoding") == 0)
         {
-          return convertWithBaseEncoding(stringObject, encoding_WinAnsi);
+          return convertWithBaseEncoding(stringObject, encoding_WinAnsi, differences);
         }
         else
         {
@@ -466,7 +480,7 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
       }
       else
       {
-        return convertWithBaseEncoding(stringObject, encoding_Standard);
+        return convertWithBaseEncoding(stringObject, encoding_Standard, differences);
         //cerr << "\nContentStream: Unsupported encoding. Using simple conversion.\n";
         //return charToWchar(stringObject->getCharString());
       }
