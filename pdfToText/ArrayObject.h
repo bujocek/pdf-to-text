@@ -1,6 +1,6 @@
 #pragma once
 #include "PdfObject.h"
-#include <list>
+#include <vector>
 
 /**
 A simple class that represents PDF Array object. <br>
