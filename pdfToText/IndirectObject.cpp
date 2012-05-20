@@ -249,10 +249,10 @@ bool IndirectObject::processAsStream()
 							  this->objectNumber << ". \n Skipping this object.\n";
 							  return false;
 
-                this->unencodedStreamSize = this->deLZWStream(streamString, 
+                /*this->unencodedStreamSize = this->deLZWStream(streamString, 
 								  lengthNumber, &this->unencodedStream);
 							  if(logEnabled)
-								  clog << "\nStream successfully decoded by LZWDecode.";
+								  clog << "\nStream successfully decoded by LZWDecode.";*/
               }
               else
               {
