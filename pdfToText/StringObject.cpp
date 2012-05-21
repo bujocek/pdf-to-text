@@ -40,7 +40,7 @@ StringObject::StringObject(char ** endKey, char * source)
     int level = 0;
     do
     {
-      *endKey = *endKey + 1;
+      *endKey = (*endKey) + 1;
       if( **endKey == '(' && *((*endKey)-1) != '\\')
         level++;
       if( **endKey == ')' && *((*endKey)-1) != '\\')

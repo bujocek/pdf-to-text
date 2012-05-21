@@ -133,11 +133,11 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
           cerr << "\nContentStream: Couldn't find string before Tj operator.\n";
           break;
         }
-        wcscat(result, this->processStringObject((StringObject*) stringObject));
+        wcscat_s(result, this->indirectObject->unencodedStreamSize, this->processStringObject((StringObject*) stringObject));
       }
       else if(strcmp(operatorObject->name,"'") == 0 || strcmp(operatorObject->name,"\"") == 0)
       {
-        wcscat(result, NEWLINE);
+        wcscat_s(result, this->indirectObject->unencodedStreamSize, NEWLINE);
         PdfObject * stringObject;
         if(index >= 1)
           stringObject = streamObjectMap[index-1];
@@ -155,7 +155,7 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
           cerr << "\nContentStream: Couldn't find string before ' or \" operator.\n";
           break;
         }
-        wcscat(result, this->processStringObject((StringObject*) stringObject));
+        wcscat_s(result, this->indirectObject->unencodedStreamSize, this->processStringObject((StringObject*) stringObject));
       }
       else if(strcmp(operatorObject->name,"TJ") == 0)
       {
@@ -178,7 +178,7 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
           for(;olIterator != objectList.end(); olIterator++)
           {
             if((*olIterator)->objectType == PdfObject::TYPE_STRING)
-              wcscat(result, this->processStringObject((StringObject*) (*olIterator)));
+              wcscat_s(result, this->indirectObject->unencodedStreamSize, this->processStringObject((StringObject*) (*olIterator)));
           }
         }
         else
@@ -189,7 +189,7 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
       }
       else if(strcmp(operatorObject->name,"Td") == 0 || strcmp(operatorObject->name,"TD") == 0 || strcmp(operatorObject->name,"TD") == 0)
       {
-        wcscat(result, NEWLINE);
+        wcscat_s(result, this->indirectObject->unencodedStreamSize, NEWLINE);
       }
     }
 
@@ -201,6 +201,7 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
   this->textFromContent = result;
   if(logEnabled)
     clog << "\nStream parsed.";
+  result[this->indirectObject->unencodedStreamSize * sizeof(wchar_t)]=L'\0';
   return result;
 }
 
@@ -229,10 +230,11 @@ wchar_t * ContentStream::convertStringWithToUnicode(StringObject * string, ToUni
   int maxCharSize = 4;
   unsigned char * charCode = new unsigned char[maxCharSize];
   wchar_t * result = null;
-  wchar_t* newbytes = new wchar_t[string->getByteStringLen()];
+  wchar_t* newbytes = new wchar_t[string->getByteStringLen()+1];
   int pos,i,currentLen;
   currentLen = 0;
   i=0;
+  newbytes[string->getByteStringLen()] = 0;
   for (pos=0;pos<string->getByteStringLen();pos++)
   {
     //get charcode
@@ -258,17 +260,17 @@ wchar_t * ContentStream::convertStringWithToUnicode(StringObject * string, ToUni
 	      size_t ls = length;
 	      if (!len) 
         {
-		      cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
+		      cerr << "\nContentStream:Couldn't convert utf16be char to wchar\n";
 		      continue;
 	      };
-        wchar_t * outbuf = new wchar_t(len);
+        wchar_t * outbuf = new wchar_t[len];
 	      char * outbufch = (char*)outbuf;
 #ifdef _WIN32 || _WIN64
 	      iconv_value = iconv (conv_desc, (const char**) &utf16be,
-			      & len, &outbufch , &length);
+			      &len, &outbufch , &length);
 #else
       	  iconv_value = iconv (conv_desc, (char**) &utf16be,
-			      & len, &outbufch , &length);
+			      &len, &outbufch , &length);
 
 #endif
 	      /* Handle failures. */
@@ -314,9 +316,10 @@ wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string,const cha
 {
   unsigned char charCode;
   wchar_t * result = null;
-  wchar_t* newbytes = new wchar_t[string->getByteStringLen()];
+  wchar_t* newbytes = new wchar_t[string->getByteStringLen()+1];
   int pos,currentLen;
   currentLen = 0;
+  newbytes[string->getByteStringLen()] = 0;
   for (pos=0;pos<string->getByteStringLen();pos++)
   {
     //get charcode
@@ -355,17 +358,17 @@ wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string,const cha
         size_t ls = length;
         if (!len) 
         {
-	        cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
+	        cerr << "\nContentStream:Couldn't convert utf16be char to wchar\n";
 	        continue;
         };
-        wchar_t * outbuf = new wchar_t(len);
+        wchar_t * outbuf = new wchar_t[len];
         char * outbufch = (char*)outbuf;
   #ifdef _WIN32 || _WIN64
         iconv_value = iconv (conv_desc, (const char**) &utf16be,
-		        & len, &outbufch , &length);
+		        &len, &outbufch , &length);
   #else
     	    iconv_value = iconv (conv_desc, (char**) &utf16be,
-		        & len, &outbufch , &length);
+		        &len, &outbufch , &length);
 
   #endif
         /* Handle failures. */
@@ -484,7 +487,6 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
         //cerr << "\nContentStream: Unsupported encoding. Using simple conversion.\n";
         //return charToWchar(stringObject->getCharString());
       }
-      return L"|-- Unknown string --|";
     }
     else
     {
