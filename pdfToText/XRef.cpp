@@ -27,7 +27,8 @@ XRef::XRef(ifstream& iFile, long position)
   getXRef();
   if(logEnabled)
 		clog<< "\n";
-
+  if(XRefTable == null)
+    return;
 	XRefTrailerIndex = -1;
 	if(XRefIndex > 0)
 		XRefTrailerIndex = findTrailer();

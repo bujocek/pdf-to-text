@@ -58,6 +58,7 @@ int _main(int argc, char* argv[])
 	//Open the PDF source file:
 	if(logEnabled)
 		clog << "\nOpening source file " << inputFilePath;
+  cerr << "Input file: " << inputFilePath << endl;
 	ifstream filei (inputFilePath, ios::binary);
 	if (!filei.is_open() || !filei.good())
 	{

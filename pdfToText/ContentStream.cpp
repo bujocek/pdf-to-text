@@ -341,7 +341,7 @@ StringObject * charNameToUTFString(const char * charName)
   return null;
 }
 
-wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string,const char * encoding[], char ** differences)
+wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string, const char ** encoding, char ** differences)
 {
   unsigned char charCode;
   wchar_t * result = null;
@@ -372,7 +372,7 @@ wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string,const cha
       StringObject * stringCharCode = charNameToUTFString(charName);
       if(stringCharCode == null)
       {
-        cerr << "\nContentStream:Couldn't get utf16be char from glyphlist.\n";
+        cerr << "\nContentStream:Couldn't get utf16be char from glyphlist for name: '" << charName << "'.";
         continue;
       }
 
@@ -439,9 +439,9 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
               }
               if((*diffsArrIt)->objectType == PdfObject::TYPE_NAME)
               {
-                int nameLen = strlen(((NameObject*)(*diffsArrIt))->name);
+                int nameLen = strlen(((NameObject*)(*diffsArrIt))->name) -1;
                 char * diffName = new char[nameLen+1]; 
-                strncpy(diffName, ((NameObject*)(*diffsArrIt))->name+1, nameLen-1); //we need to add "+1" because we want remove initial '/' char
+                strncpy(diffName, ((NameObject*)(*diffsArrIt))->name+1, nameLen); //we need to add "+1" because we want remove initial '/' char
                 diffName[nameLen] = 0;
                 if(charCode >= 0 && charCode < 256)
                   differences[charCode] = diffName;
