@@ -8,6 +8,7 @@
 #define NEWLINE L"\r" // mac
 #else
 #define NEWLINE L"\n" //u**x
+#define wcscat_s mywcscat
 #endif
 
 
@@ -27,6 +28,14 @@ ContentStream::ContentStream(IndirectObject * io, PageTreeNode * page)
 
 ContentStream::~ContentStream(void)
 {
+}
+
+int mywcscat(wchar_t *strDestination,
+		   size_t numberOfElements,
+		   const wchar_t *strSource)
+{
+	wcscat(strDestination, strSource);
+	return 0;
 }
 
 wchar_t * ContentStream::getText( ContentStream * prevStream)
