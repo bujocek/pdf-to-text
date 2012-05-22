@@ -147,8 +147,8 @@ XRefSubsection * XRef::getXRef()
     if(firstObject->objectType == PdfObject::TYPE_NUMBER) //if it is stream
     {
       cerr << "\nXRef: Not Implemented - Cross-Refference stream found and wasn't processed.\n";
-      XRefTable = new XRefSubsection [0];
-      return XRefTable;
+      XRefTable = null;
+      return null;
     }
 		resultTable = new XRefSubsection [65534];
 		sectionCount = 0;
