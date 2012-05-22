@@ -20,6 +20,7 @@ ContentStream::ContentStream(IndirectObject * io, PageTreeNode * page)
   this->page = page;
   this->textFromContent = null;
   this->currentFont = null;
+  this->currentCMap = null;
   if(io != null)
     this->indirectObject->processAsStream();
 }
