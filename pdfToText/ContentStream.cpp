@@ -87,9 +87,13 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
           {
             PdfObject * font = fonts->getObject(((NameObject*)nameObject)->name, true);
             if(font != null && font->objectType == PdfObject::TYPE_DICTIONARY)
+            {
               this->currentFont = (DictionaryObject*)font;
+            }
             if(this->currentFont == null)
+            {
               cerr << "\nCouldn't get font specified by name before 'Tf' oprerator\n";
+            }
             else //try to get /ToUnicode map
             {
               PdfObject * tucm = null;
@@ -212,17 +216,58 @@ wchar_t * charToWchar(char * source, int len = -1)
     origsize = strlen(source);
   else
     origsize = len;
-  //const size_t newsize = (origsize+1) * sizeof(wchar_t);
-  //wchar_t * wcstring = new wchar_t[newsize];
   wchar_t * wcstring = new wchar_t[origsize+1];
   mbstowcs(wcstring, source, origsize);
   wcstring[origsize] = L'\0';
   return wcstring;
 }
 
-void ContentStream::convertUTFtoWchar (char * utf16be,  size_t * wcharlen, wchar_t * wchar)
+int convertUTFtoWchar(StringObject * stringCharCode, wchar_t * newbytes, int freeSpace)
 {
   //TODO: move converting code from convertStringWithToUnicode to this method
+  if(stringCharCode == null)
+  {
+    cerr << "\nContentStream: Can't convert null string object to wchar.\n";
+    return -1;
+  }
+  else
+  {
+	  unsigned char * utf16be = stringCharCode->getByteString();
+	  size_t iconv_value;
+    size_t len =  stringCharCode->getByteStringLen();
+    size_t length = len*sizeof(wchar_t);
+    size_t ls = length;
+    if (!len) 
+    {
+      cerr << "\nContentStream:Couldn't convert utf16be char to wchar\n";
+      return -1;
+    };
+    wchar_t * outbuf = new wchar_t[len+1];
+    outbuf[stringCharCode->getByteStringLen()] = 0;
+    char * outbufch = (char*)outbuf;
+#ifdef _WIN32 || _WIN64
+    iconv_value = iconv (conv_desc, (const char**) &utf16be,
+	      &len, &outbufch , &length);
+#else
+  	  iconv_value = iconv (conv_desc, (char**) &utf16be,
+	      &len, &outbufch , &length);
+#endif
+    /* Handle failures. */
+    if (iconv_value == (size_t) -1)
+    {
+      cerr << "\nContentStream: Couldn't convert utf16be char to wchar\n";
+      return -1;
+    }
+
+    int processed = (ls-length)/sizeof(wchar_t);
+    if(processed > freeSpace)
+    {
+      cerr<<"\nContentStream: Unicode char doesn't fit to result array. Array probably too smal.\n";
+      processed = freeSpace;
+    }
+    memcpy(newbytes, outbuf, (ls-length)*sizeof(wchar_t));
+    return processed;
+  }
 }
 
 wchar_t * ContentStream::convertStringWithToUnicode(StringObject * string, ToUnicodeCMap * cmap)
@@ -244,44 +289,18 @@ wchar_t * ContentStream::convertStringWithToUnicode(StringObject * string, ToUni
     {
       //map charcode and return string object
       StringObject * stringCharCode = cmap->getUTFChar(charCode, i);
-      //convert from UTF-16BE to wchar (unicode)
       if(stringCharCode == null)
       {
         cerr << "\nContentStream:Couldn't get utf16be char from ToUnicode cmap.\n";
-		    continue;
+        continue;
       }
-      else
-      {
-    	  unsigned char * utf16be = stringCharCode->getByteString();
-          
-    	  size_t iconv_value;
-        size_t len =  stringCharCode->getByteStringLen();
-	      size_t length = len*sizeof(wchar_t);
-	      size_t ls = length;
-	      if (!len) 
-        {
-		      cerr << "\nContentStream:Couldn't convert utf16be char to wchar\n";
-		      continue;
-	      };
-        wchar_t * outbuf = new wchar_t[len];
-	      char * outbufch = (char*)outbuf;
-#ifdef _WIN32 || _WIN64
-	      iconv_value = iconv (conv_desc, (const char**) &utf16be,
-			      &len, &outbufch , &length);
-#else
-      	  iconv_value = iconv (conv_desc, (char**) &utf16be,
-			      &len, &outbufch , &length);
 
-#endif
-	      /* Handle failures. */
-	      if (iconv_value == (size_t) -1)
-	      {
-		      cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
-          continue;
-	      }
-	      memcpy(&newbytes[currentLen], outbuf, ls-length);
-	      currentLen += (ls-length)/sizeof(wchar_t);
-      }
+      //convert from UTF-16BE to wchar (unicode)
+      int processed = convertUTFtoWchar(stringCharCode, &newbytes[currentLen], string->getByteStringLen()-currentLen);
+      if( processed >= 0)
+        currentLen += processed;
+      else
+        continue;
       i=0;
     }
     if(i>= maxCharSize)
@@ -341,45 +360,18 @@ wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string,const cha
     else
     {
       StringObject * stringCharCode = charNameToUTFString(charName);
-      
-      //convert from UTF-16BE to wchar (unicode)
       if(stringCharCode == null)
       {
-        cerr << "\nContentStream: Couldn't map character name to unicode value using glyph list.\n";
+        cerr << "\nContentStream:Couldn't get utf16be char from glyphlist.\n";
         continue;
       }
-      else
-      {
-  	    unsigned char * utf16be = stringCharCode->getByteString();
-          
-  	    size_t iconv_value;
-        size_t len =  stringCharCode->getByteStringLen();
-        size_t length = len*sizeof(wchar_t);
-        size_t ls = length;
-        if (!len) 
-        {
-	        cerr << "\nContentStream:Couldn't convert utf16be char to wchar\n";
-	        continue;
-        };
-        wchar_t * outbuf = new wchar_t[len];
-        char * outbufch = (char*)outbuf;
-  #ifdef _WIN32 || _WIN64
-        iconv_value = iconv (conv_desc, (const char**) &utf16be,
-		        &len, &outbufch , &length);
-  #else
-    	    iconv_value = iconv (conv_desc, (char**) &utf16be,
-		        &len, &outbufch , &length);
 
-  #endif
-        /* Handle failures. */
-        if (iconv_value == (size_t) -1)
-        {
-	        cerr << "\nContentStream:Couldnt convert utf16be char to wchar\n";
-          continue;
-        }
-        memcpy(&newbytes[currentLen], outbuf, ls-length);
-        currentLen += (ls-length)/sizeof(wchar_t);
-      }
+      //convert from UTF-16BE to wchar (unicode)
+      int processed = convertUTFtoWchar(stringCharCode, &newbytes[currentLen], string->getByteStringLen()-currentLen);
+      if( processed >= 0)
+        currentLen += processed;
+      else
+        continue;
     }
   }
   //push to result
@@ -478,14 +470,12 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
         else
         {
           cerr << "\nContentStream: Unsupported encoding. Using simple conversion.\n";
-          return charToWchar(stringObject->getCharString());
+          return charToWchar((char*)stringObject->getByteString(), stringObject->getByteStringLen());
         }
       }
       else
       {
         return convertWithBaseEncoding(stringObject, encoding_Standard, differences);
-        //cerr << "\nContentStream: Unsupported encoding. Using simple conversion.\n";
-        //return charToWchar(stringObject->getCharString());
       }
     }
     else
@@ -499,180 +489,3 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
   
   return null;
 }
-
-////////////
-//OLD CODE//
-////////////
-
-///**
-//helper function for hexaStringToCString
-//*/
-//char hexaDoubleCharToChar(char h1, char h2)
-//{
-//	char hexa[3];
-//	hexa[0] = h1;
-//	hexa[1] = h2;
-//	hexa[2] = 0;
-//	int charCode = strtol(hexa, null, 16);
-//	return charCode;
-//}
-
-//char * ContentStream::hexaStringToCString(char * source, int length)
-//{
-//	char * newString = new char[length/2+1];
-//	for(int i=0; i<length; i+=2)
-//	{
-//		if(i+1 >= length)
-//			newString[i/2] = hexaDoubleCharToChar(source[i], '0'); //add '0' char at the end if it is not even count of chars
-//		else
-//			newString[i/2] = hexaDoubleCharToChar(source[i], source[i+1]);
-//	}
-//	newString[length/2] = 0;
-//	return newString;
-//}
-
-//char * ContentStream::getText2()
-//{
-//  char * usingString;
-//	int usingStringLen;
-//	if(this->unencodedStreamSize > 0)
-//	{
-//		usingString = this->unencodedStream;
-//		usingStringLen = this->unencodedStreamSize;
-//	}
-//	else if(this->indirectObject->objectStringSize > 0)
-//	{
-//		usingString = this->indirectObject->objectString;
-//		usingStringLen = this->indirectObject->objectStringSize;
-//	}
-//	else
-//		return null;
-//
-//	//search for BT and ET
-//	char * bt = null;
-//	char * et = null;
-//	char * str;
-//	queue<char *, deque<char*>> strings;
-//	long resultSize = 0;
-//	do
-//	{
-//		bt = StringUtils::strStrModified(usingString, "BT", usingStringLen);
-//		et = null;
-//		if(bt != null)
-//			et = StringUtils::strStrModified(bt, "ET", usingStringLen - (bt - usingString));
-//		if(et != null)
-//		{
-//			et += 2;
-//			str = new char[et-bt+1];
-//			strncpy(str,bt,et-bt);
-//			str[et-bt] = 0;
-//			resultSize += et-bt;
-//			strings.push(str);
-//		}
-//		usingStringLen = usingString - et;
-//		usingString = et;
-//	} while(bt != null);
-//	
-//	if(logEnabled && strings.size() > 0)
-//		clog << "\nFound text object(s) in pdf object " << this->indirectObject->objectNumber << ".\nExtracting...";
-//
-//	char * resultString = new char[resultSize+1];
-//	resultString[0] = 0;
-//	while(strings.size() > 0)
-//	{
-//		str = this->processTextObject(strings.front());
-//		strcat(resultString, str);
-//		delete[] str;
-//		strings.pop();
-//	}
-//	if(logEnabled && resultSize > 0)
-//		clog << "\nSomething extracted.";
-//	resultString[resultSize] = 0;
-//	return resultString;
-//}
-
-//char * ContentStream::processTextObject(char * textObject)
-//{
-//  int len = strlen(textObject);
-//	int i =0;
-//	char * begin = null;
-//	char * end;
-//	char * result = new char[len];
-//	result[0] = 0;
-//	bool hexa = false;
-//	int deep = 0;
-//
-//	for(;i<len; i++)
-//	{
-//    //New line operators adding
-//    if(textObject[i] == 'T' && deep == 0)
-//    {
-//      switch(textObject[i+1])
-//      {
-//      case 'd':
-//      case 'D':
-//      case '*':
-//        strncat(result,"\n",1);
-//      }
-//    }
-//    if((textObject[i] == '\'' || textObject[i] == '"') && deep == 0)
-//    {
-//      strncat(result,"\n",1);
-//    }
-//
-//		if(textObject[i] == '(')
-//		{
-//			if(deep>0)
-//			{
-//				deep++;
-//			}
-//			if(deep==0)
-//			{
-//				hexa = false;
-//				deep++;
-//				begin = &textObject[i];
-//			}
-//		}
-//		if(textObject[i] == ')' && textObject[i-1] != '\\')
-//		{
-//			if(deep>0)
-//			{
-//				deep--;
-//			}
-//			if(deep==0)
-//			{
-//				end = &textObject[i];
-//        if(begin == null)
-//        {
-//          cerr<<"\nContentStream: Problem in finding strings. Probably not text object.\n";
-//          return result;
-//        }
-//				//TODO: process string between begin and end
-//				strncat(result, begin+1, end-begin-1);
-//			}
-//		}
-//		if(textObject[i] == '<')
-//		{
-//			if(deep==0)
-//			{
-//				hexa = true;
-//				deep++;
-//				begin = &textObject[i];
-//			}
-//		}
-//		if(textObject[i] == '>')
-//		{
-//			if(deep==1 && hexa)
-//			{
-//				deep--;
-//				end = &textObject[i];
-//				//TODO: use font maps for determining chars from string
-//				char * convertedString = hexaStringToCString(begin+1, end - begin -1);
-//				strcat(result, convertedString);
-//				delete[] convertedString;
-//				//strncat(result, begin, end-begin+1);
-//			}
-//		}
-//	}
-//	return result;
-//}

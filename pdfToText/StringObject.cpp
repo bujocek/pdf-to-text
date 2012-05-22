@@ -245,6 +245,7 @@ unsigned char * StringObject::getByteString()
     else
     {
       this->byteString = new unsigned char[this->length+1]; //assuming that byte string will be same or shorter than char string
+      this->byteString[this->length] = 0;
       int pos = 0;
       for(int j = 0; j < this->length; j++)
       {
@@ -323,6 +324,11 @@ unsigned char * StringObject::getByteString()
           this->byteString[pos] = this->string[j];
           pos++;
         }
+      }
+      if(byteString[this->length] != 0 || this->length < pos)
+      {
+        cerr<<"StringObject: something went wrong when parsing char string to byte string.";
+        this->byteString[this->length] = 0;
       }
       this->byteStringLen = pos;
       this->byteString[pos] = 0;

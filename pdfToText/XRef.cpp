@@ -149,8 +149,6 @@ XRefSubsection * XRef::getXRef()
       cerr << "\nXRef: Not Implemented - Cross-Refference stream found and wasn't processed.\n";
       XRefTable = new XRefSubsection [0];
       return XRefTable;
-      /*resultTable = new XRefSubsection[0];
-      resultTable->count = 0;*/
     }
 		resultTable = new XRefSubsection [65534];
 		sectionCount = 0;

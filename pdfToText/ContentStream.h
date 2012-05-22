@@ -30,8 +30,6 @@ private:
   wchar_t * processStringObject(StringObject * stringObject);
   wchar_t * convertStringWithToUnicode(StringObject * string, ToUnicodeCMap * cmap);
   wchar_t * convertWithBaseEncoding(StringObject * string, const char * encoding[], char ** differences = null);
-  void convertUTFtoWchar (char * utf16be,  size_t * wcharlen, wchar_t * wchar);
-
 public:
 
   /**
@@ -71,26 +69,4 @@ public:
   \param prevStream Previous stream on same page if there are more of them. Needed when operator's operands are in previous stream and operator is in this stream.
 	*/
 	wchar_t * getText(ContentStream * prevStream = null);
-
-
-
-  //private:
-  ///**
-  //#DEPRECATED#
-  //An old version of getText - not used any more
-  //*/
-  //char * getText2();
-
-  ///**
-  //#DEPRECATED#
-  //An old version of getting text method - not used any more
-  //retrieves text from textObject found in this pdf object
-  //*/
-  //char * processTextObject(char * textObject);
-	
-	///**
-	//converts the hexa string in source to CString
-	//creates new string and returns it
-	//*/
-	//char * hexaStringToCString(char * source, int length);
 };

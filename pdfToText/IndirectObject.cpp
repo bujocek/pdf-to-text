@@ -38,7 +38,7 @@ IndirectObject::IndirectObject(tableRow row, int objectNum, ifstream& iFile)
 bool IndirectObject::load()
 {
 	//find object in file
-	if(this->isLoaded)
+  if(this->isLoaded)
 		return true;
 	if(this->file != null && this->byteOffset > 0)
 	{
@@ -51,7 +51,7 @@ bool IndirectObject::load()
 		char * endobj = null;
 		this->file->clear();
 		this->file->seekg(this->byteOffset);
-		while(endobj == null)
+    while(endobj == null)
 		{
 			prevBlock = block;
 			block = new char[blockSize];
@@ -68,7 +68,6 @@ bool IndirectObject::load()
 			}
 			block[blockSize-1] = 0; //end this string
 			blockQueue.push(block);	
-			
 			//check if 'endobj' is between blocks
 			if(endobj == null && prevBlock != null)
 			{
@@ -83,16 +82,16 @@ bool IndirectObject::load()
 					endobj = &block[positionInJoined -5 +6];
 				}
 			}
-
-			if(endobj == null)
+      if(endobj == null)
 			{
 				endobj = StringUtils::strStrModified(block, "endobj", blockSize);
 				if(endobj != null)
 					endobj += 6;
 			}
 		} 
-		this->objectStringSize = ( (int) blockQueue.size() - 1)*(blockSize-1) + (endobj - block);
+		this->objectStringSize = ( (int) blockQueue.size() - 1)*(blockSize-1) + (endobj - block); //n-1 blocks + rest from last block
 		this->objectString = new char[this->objectStringSize+1];
+    this->objectString[this->objectStringSize] = 0;
 		char * index = this->objectString;
 		while((int) blockQueue.size() > 1)
 		{
@@ -105,11 +104,15 @@ bool IndirectObject::load()
 		block = blockQueue.front();
 		memcpy(index, block, (endobj - block));
 		blockQueue.pop();
-    this->objectString[this->objectStringSize] = 0;
+    if(this->objectString[this->objectStringSize] != 0)
+    {
+      cerr << "IndirectObject: Something is really wrong!";
+      this->objectString[this->objectStringSize] = 0;
+    }
 		/*if(logEnabled)
       clog << "\nObject " << this->objectNumber << " " << this->generationNumber << " R loaded into memory.";*/
 		this->isLoaded = true;
-		return true;
+    return true;
 	}
 	return false;
 }
@@ -227,8 +230,13 @@ bool IndirectObject::processAsStream()
 					{
 					  //than it is unencoded stream (not so common case)
             this->unencodedStream = new char[lengthNumber+1];
-            memcpy( this->unencodedStream, streamString, lengthNumber);
             this->unencodedStream[lengthNumber] = 0;
+            memcpy( this->unencodedStream, streamString, lengthNumber);
+            if(this->unencodedStream[lengthNumber] != 0)
+            {
+              cerr << "IndirectObject: Something went really wrong!";
+              this->unencodedStream[lengthNumber] = 0;
+            }
 						this->unencodedStreamSize = lengthNumber;
 					}
 					else
@@ -313,7 +321,7 @@ long IndirectObject::deLZWStream(char * streamStart, long streamLen, char ** out
 
 long IndirectObject::deflateStream(char * streamStart, long streamLen, char ** output)
 {
-  long outsize = streamLen*10; //assuming that output will not be bigger than ten times input
+  long outsize = streamLen*20; //assuming that output will not be bigger than twenty times input
 
   if(this->streamDictionary != null && this->streamDictionary->getObject("DL") != null) 
   {
@@ -327,7 +335,8 @@ long IndirectObject::deflateStream(char * streamStart, long streamLen, char ** o
     }
   }
 
-	char * out = new char [outsize]; 
+	char * out = new char [outsize+1]; 
+  out[outsize] = 0;
 	z_stream zstrm;
 	memset(&zstrm, 0, sizeof(zstrm));
 	
@@ -343,6 +352,10 @@ long IndirectObject::deflateStream(char * streamStart, long streamLen, char ** o
 		if (rst2 >= 0)
 		{
 			//Ok, got something
+      if(out[outsize] != 0)
+      {
+        cerr<< "IndirectObject: (deflateStream) something went wrong";
+      }
 			*output = new char [zstrm.total_out+1];
 			memcpy(*output, out, zstrm.total_out);
 			delete[] out;
