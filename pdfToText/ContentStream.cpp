@@ -43,7 +43,16 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
     return L"";
   }
   DictionaryObject * fonts = this->page->getFonts();
-  this->currentFont = null;
+  if(prevStream != null)
+  {
+    this->currentFont = prevStream->currentFont;
+    this->currentCMap = prevStream->currentCMap;
+  }
+  else
+  {
+    this->currentFont = null;
+    this->currentCMap = null;
+  }
   wchar_t * result = new wchar_t[this->indirectObject->unencodedStreamSize * sizeof(wchar_t)+1]; //assuming that the result string will not be bigger than whole stream
   result[0] = L'\0';
   char * usingString = this->indirectObject->unencodedStream;
