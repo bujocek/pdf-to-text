@@ -31,3 +31,4 @@ errorfile.txt
 
 pdfToText/*.cd
 Release/pdfToText.pdb
+/nbproject/private/

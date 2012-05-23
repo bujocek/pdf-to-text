@@ -53,7 +53,7 @@ public:
   \param string The string we want to skip white space in.
   \return Position of first non white space character.
   */
-  static char * skipWhiteSpace(char * string);
+  static char * skipWhiteSpace(char * string, int len = -1);
   
   /**
   Reads one line from file. 

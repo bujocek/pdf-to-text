@@ -87,10 +87,16 @@ bool StringUtils::isWhiteSpace(char character)
   }
 }
 
-char * StringUtils::skipWhiteSpace(char * string)
+char * StringUtils::skipWhiteSpace(char * string, int len)
 {
+  int i = len;
   while(StringUtils::isWhiteSpace(*string))
+  {
     string++;
+    i--;
+    if(i == 0)
+        return string;
+  }
   return string;
 }
 

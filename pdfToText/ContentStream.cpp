@@ -218,7 +218,7 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
 
     index++;
     source = *endKey;
-    source = StringUtils::skipWhiteSpace(source);
+    source = StringUtils::skipWhiteSpace(source, usingStringLen - (source-usingString) );
   }while(source-usingString < usingStringLen && value != null);
   
   this->textFromContent = result;
