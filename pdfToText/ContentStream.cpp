@@ -102,6 +102,7 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
         if(nameObject != null && nameObject->objectType == PdfObject::TYPE_NAME)
         {
           this->currentFont = null;
+          this->currentCMap = null;
           if(fonts != null)
           {
             PdfObject * font = fonts->getObject(((NameObject*)nameObject)->name, true);
@@ -116,7 +117,6 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
             else //try to get /ToUnicode map
             {
               PdfObject * tucm = null;
-              this->currentCMap = null;
               char * tucmName = "/ToUnicode";
               tucm = this->currentFont->getObject(tucmName);
               if(tucm != null && tucm->objectType == PdfObject::TYPE_INDIRECT_OBJECT)
