@@ -284,7 +284,7 @@ int convertUTFtoWchar(StringObject * stringCharCode, wchar_t * newbytes, int fre
       cerr<<"\nContentStream: Unicode char doesn't fit to result array. Array probably too smal.\n";
       processed = freeSpace;
     }
-    memcpy(newbytes, outbuf, (ls-length)*sizeof(wchar_t));
+    memcpy(newbytes, outbuf, (ls-length));
     return processed;
   }
 }
@@ -327,6 +327,11 @@ wchar_t * ContentStream::convertStringWithToUnicode(StringObject * string, ToUni
       cerr << "\nContentStream: Problem with determining char codes in string.\n";
       return L"";
     }
+  }
+  if(newbytes[string->getByteStringLen()] != 0)
+  {
+    cerr <<"\n ContentStream: something went wrong\n";
+    newbytes[string->getByteStringLen()] = 0;
   }
   //push to result
   result = new wchar_t[currentLen+1];
@@ -392,6 +397,11 @@ wchar_t * ContentStream::convertWithBaseEncoding(StringObject * string, const ch
       else
         continue;
     }
+  }
+  if(newbytes[string->getByteStringLen()] != 0)
+  {
+    cerr <<"\n ContentStream: something went wrong\n";
+    newbytes[string->getByteStringLen()] = 0;
   }
   //push to result
   result = new wchar_t[currentLen+1];
