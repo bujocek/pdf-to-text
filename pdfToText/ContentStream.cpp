@@ -2,8 +2,7 @@
 #include "ContentStream.h"
 #include "EncodingTable.h"
 
-#ifdef _WIN32 || _WIN64
-#else
+#ifndef _WIN32 || _WIN64
 #define wcscat_s mywcscat
 #endif
 

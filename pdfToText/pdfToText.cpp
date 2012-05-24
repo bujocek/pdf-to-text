@@ -15,6 +15,10 @@
 #include <time.h>
 #include <limits.h>
 
+#ifndef _WIN32 || _WIN64
+#define stricmp strcmp
+#endif
+
 using namespace std;
 
 //functions
