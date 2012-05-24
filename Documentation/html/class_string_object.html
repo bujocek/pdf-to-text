@@ -25,12 +25,14 @@
  <tbody>
  <tr style="height: 56px;">
   
+  <td id="projectlogo"><img alt="Logo" src="logo2.png"/></td>
+  
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">pdfToText
-   &#160;<span id="projectnumber">1.0</span>
+   &#160;<span id="projectnumber">2.0</span>
    </div>
-   
+   <div id="projectbrief">PDF to text conversion tool</div>
   </td>
   
   
@@ -102,13 +104,16 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_object.html#a145c284b24973634367ebe02d5131d16">StringObject</a> (char **endKey, char *<a class="el" href="class_pdf_object.html#a4da8114b917a2ad19e01def5927db578">source</a>)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_object.html#acc5d9eda9c255de32c81ddaa021f1c20">~StringObject</a> (void)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_object.html#ab19095367a8a5b6b327e9150e798b67f">toNum</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_object.html#ae6b51a51c7e5be6f1efd8c504c97c81f">getByteStringLen</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_object.html#ae6a9301b43a00cf7fffe9a7ef34cd368">getHexaStringLen</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_object.html#ad044ae4b970f732021aa1d160efe86f4">getByteString</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_object.html#ae487c0d88eded17772b38659d39e4f82">getCharString</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_object.html#aef187cacb2794ff63e56be03178b780d">getHexaString</a> ()</td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_object.html#a31cbb312e40a00ce645785881994f0dd">isHexa</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_object.html#ac21bd0165fa99a16707b1dcad94c6ce8">string</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_object.html#ace6d5b2843c01b421b8c7725d96aaf04">length</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_object.html#a39d3996c968dc08970ed6670be3902f5">byteStringLen</a></td></tr>
 </table>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a145c284b24973634367ebe02d5131d16"></a><!-- doxytag: member="StringObject::StringObject" ref="a145c284b24973634367ebe02d5131d16" args="(char **endKey, char *source)" -->
@@ -179,8 +184,78 @@ Public Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Converts this hexa string to unsigned char string (byte string) </p>
-<dl class="return"><dt><b>Returns:</b></dt><dd>This hexa string converted to bytes. </dd></dl>
+<p>Converts this string to unsigned char string (byte string) </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>This string converted to bytes. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ae6b51a51c7e5be6f1efd8c504c97c81f"></a><!-- doxytag: member="StringObject::getByteStringLen" ref="ae6b51a51c7e5be6f1efd8c504c97c81f" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="class_string_object.html#ae6b51a51c7e5be6f1efd8c504c97c81f">StringObject::getByteStringLen</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>length of byte string </p>
+
+</div>
+</div>
+<a class="anchor" id="ae487c0d88eded17772b38659d39e4f82"></a><!-- doxytag: member="StringObject::getCharString" ref="ae487c0d88eded17772b38659d39e4f82" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char * <a class="el" href="class_string_object.html#ae487c0d88eded17772b38659d39e4f82">StringObject::getCharString</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Converts this string to char string </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>This string converted to chars. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aef187cacb2794ff63e56be03178b780d"></a><!-- doxytag: member="StringObject::getHexaString" ref="aef187cacb2794ff63e56be03178b780d" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char * <a class="el" href="class_string_object.html#aef187cacb2794ff63e56be03178b780d">StringObject::getHexaString</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Converts this string to hexa string </p>
+<dl class="return"><dt><b>Returns:</b></dt><dd>This string converted to hexa string. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ae6a9301b43a00cf7fffe9a7ef34cd368"></a><!-- doxytag: member="StringObject::getHexaStringLen" ref="ae6a9301b43a00cf7fffe9a7ef34cd368" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="class_string_object.html#ae6a9301b43a00cf7fffe9a7ef34cd368">StringObject::getHexaStringLen</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>length of hexa string </p>
 
 </div>
 </div>
@@ -203,20 +278,6 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Member Data Documentation</h2>
-<a class="anchor" id="a39d3996c968dc08970ed6670be3902f5"></a><!-- doxytag: member="StringObject::byteStringLen" ref="a39d3996c968dc08970ed6670be3902f5" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int <a class="el" href="class_string_object.html#a39d3996c968dc08970ed6670be3902f5">StringObject::byteStringLen</a></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<p>length of byte string </p>
-
-</div>
-</div>
 <a class="anchor" id="a31cbb312e40a00ce645785881994f0dd"></a><!-- doxytag: member="StringObject::isHexa" ref="a31cbb312e40a00ce645785881994f0dd" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -282,7 +343,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 5 2011 17:19:23 for pdfToText by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu May 24 2012 23:05:02 for pdfToText by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6
 </small></address>

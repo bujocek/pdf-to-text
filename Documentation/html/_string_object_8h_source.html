@@ -25,12 +25,14 @@
  <tbody>
  <tr style="height: 56px;">
   
+  <td id="projectlogo"><img alt="Logo" src="logo2.png"/></td>
+  
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">pdfToText
-   &#160;<span id="projectnumber">1.0</span>
+   &#160;<span id="projectnumber">2.0</span>
    </div>
-   
+   <div id="projectbrief">PDF to text conversion tool</div>
   </td>
   
   
@@ -91,25 +93,40 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00011"></a>00011 {
 <a name="l00012"></a>00012 <span class="keyword">private</span>:
 <a name="l00013"></a>00013   <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> * byteString;
-<a name="l00014"></a>00014   <span class="keywordtype">long</span> numVal;
-<a name="l00015"></a>00015 <span class="keyword">public</span>:
-<a name="l00016"></a>00016   
-<a name="l00020"></a><a class="code" href="class_string_object.html#a31cbb312e40a00ce645785881994f0dd">00020</a>   <span class="keywordtype">bool</span> <a class="code" href="class_string_object.html#a31cbb312e40a00ce645785881994f0dd">isHexa</a>;
-<a name="l00021"></a>00021   
-<a name="l00025"></a><a class="code" href="class_string_object.html#ac21bd0165fa99a16707b1dcad94c6ce8">00025</a>   <span class="keywordtype">char</span> * <a class="code" href="class_string_object.html#ac21bd0165fa99a16707b1dcad94c6ce8">string</a>;
-<a name="l00026"></a>00026   
-<a name="l00030"></a><a class="code" href="class_string_object.html#ace6d5b2843c01b421b8c7725d96aaf04">00030</a>   <span class="keywordtype">int</span> <a class="code" href="class_string_object.html#ace6d5b2843c01b421b8c7725d96aaf04">length</a>;
-<a name="l00031"></a>00031 
-<a name="l00035"></a><a class="code" href="class_string_object.html#a39d3996c968dc08970ed6670be3902f5">00035</a>   <span class="keywordtype">int</span> <a class="code" href="class_string_object.html#a39d3996c968dc08970ed6670be3902f5">byteStringLen</a>;
-<a name="l00036"></a>00036 
-<a name="l00043"></a>00043   <a class="code" href="class_string_object.html#a145c284b24973634367ebe02d5131d16">StringObject</a>(<span class="keywordtype">char</span> ** endKey, <span class="keywordtype">char</span> * <a class="code" href="class_pdf_object.html#a4da8114b917a2ad19e01def5927db578">source</a>);
-<a name="l00044"></a>00044 
-<a name="l00048"></a>00048   <a class="code" href="class_string_object.html#acc5d9eda9c255de32c81ddaa021f1c20">~StringObject</a>(<span class="keywordtype">void</span>);
+<a name="l00014"></a>00014   <span class="keywordtype">char</span> * hexaString;
+<a name="l00015"></a>00015   <span class="keywordtype">char</span> * charString;
+<a name="l00016"></a>00016   <span class="keywordtype">long</span> numVal;
+<a name="l00017"></a>00017 
+<a name="l00021"></a>00021   <span class="keywordtype">int</span> byteStringLen;
+<a name="l00022"></a>00022   
+<a name="l00026"></a>00026   <span class="keywordtype">int</span> charStringLen;
+<a name="l00027"></a>00027 
+<a name="l00031"></a>00031   <span class="keywordtype">int</span> hexaStringLen;
+<a name="l00032"></a>00032 
+<a name="l00033"></a>00033 <span class="keyword">public</span>:
+<a name="l00034"></a>00034   
+<a name="l00038"></a><a class="code" href="class_string_object.html#a31cbb312e40a00ce645785881994f0dd">00038</a>   <span class="keywordtype">bool</span> <a class="code" href="class_string_object.html#a31cbb312e40a00ce645785881994f0dd">isHexa</a>;
+<a name="l00039"></a>00039   
+<a name="l00043"></a><a class="code" href="class_string_object.html#ac21bd0165fa99a16707b1dcad94c6ce8">00043</a>   <span class="keywordtype">char</span> * <a class="code" href="class_string_object.html#ac21bd0165fa99a16707b1dcad94c6ce8">string</a>;
+<a name="l00044"></a>00044   
+<a name="l00048"></a><a class="code" href="class_string_object.html#ace6d5b2843c01b421b8c7725d96aaf04">00048</a>   <span class="keywordtype">int</span> <a class="code" href="class_string_object.html#ace6d5b2843c01b421b8c7725d96aaf04">length</a>;
 <a name="l00049"></a>00049 
-<a name="l00054"></a>00054   <span class="keywordtype">int</span> <a class="code" href="class_string_object.html#ab19095367a8a5b6b327e9150e798b67f">toNum</a>();
-<a name="l00055"></a>00055   
-<a name="l00060"></a>00060   <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> * <a class="code" href="class_string_object.html#ad044ae4b970f732021aa1d160efe86f4">getByteString</a>();
-<a name="l00061"></a>00061 };
+<a name="l00056"></a>00056   <a class="code" href="class_string_object.html#a145c284b24973634367ebe02d5131d16">StringObject</a>(<span class="keywordtype">char</span> ** endKey, <span class="keywordtype">char</span> * <a class="code" href="class_pdf_object.html#a4da8114b917a2ad19e01def5927db578">source</a>);
+<a name="l00057"></a>00057 
+<a name="l00061"></a>00061   <a class="code" href="class_string_object.html#acc5d9eda9c255de32c81ddaa021f1c20">~StringObject</a>(<span class="keywordtype">void</span>);
+<a name="l00062"></a>00062 
+<a name="l00067"></a>00067   <span class="keywordtype">int</span> <a class="code" href="class_string_object.html#ab19095367a8a5b6b327e9150e798b67f">toNum</a>();
+<a name="l00068"></a>00068   
+<a name="l00072"></a>00072   <span class="keywordtype">int</span> <a class="code" href="class_string_object.html#ae6b51a51c7e5be6f1efd8c504c97c81f">getByteStringLen</a>();
+<a name="l00073"></a>00073 
+<a name="l00077"></a>00077   <span class="keywordtype">int</span> <a class="code" href="class_string_object.html#ae6a9301b43a00cf7fffe9a7ef34cd368">getHexaStringLen</a>();
+<a name="l00078"></a>00078 
+<a name="l00083"></a>00083   <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> * <a class="code" href="class_string_object.html#ad044ae4b970f732021aa1d160efe86f4">getByteString</a>();
+<a name="l00084"></a>00084 
+<a name="l00089"></a>00089   <span class="keywordtype">char</span> * <a class="code" href="class_string_object.html#ae487c0d88eded17772b38659d39e4f82">getCharString</a>();
+<a name="l00090"></a>00090 
+<a name="l00095"></a>00095   <span class="keywordtype">char</span> * <a class="code" href="class_string_object.html#aef187cacb2794ff63e56be03178b780d">getHexaString</a>();
+<a name="l00096"></a>00096 };
 </pre></div></div>
 </div>
 <!-- window showing the filter options -->
@@ -129,7 +146,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 5 2011 17:19:22 for pdfToText by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu May 24 2012 23:05:02 for pdfToText by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6
 </small></address>

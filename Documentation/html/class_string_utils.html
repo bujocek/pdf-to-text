@@ -25,12 +25,14 @@
  <tbody>
  <tr style="height: 56px;">
   
+  <td id="projectlogo"><img alt="Logo" src="logo2.png"/></td>
+  
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">pdfToText
-   &#160;<span id="projectnumber">1.0</span>
+   &#160;<span id="projectnumber">2.0</span>
    </div>
-   
+   <div id="projectbrief">PDF to text conversion tool</div>
   </td>
   
   
@@ -93,7 +95,7 @@ Static Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_utils.html#a7835c575e2fabb9688c413cdb432acc2">isDelimiter</a> (char character)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_utils.html#a70248ab84a77b0d9a3bebd0e8cdaec71">isEOL</a> (char character)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_utils.html#aeefbca71c7f5690a7a4d9de5b1a4ed48">isWhiteSpace</a> (char character)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">static char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_utils.html#acb5a8190033e73423fc709600aa6e0a1">skipWhiteSpace</a> (char *string)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_utils.html#ad9d33749e001f653656fe304c5dbb063">skipWhiteSpace</a> (char *string, int len=-1)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_string_utils.html#a4677b8efc22cef6449b91263d9f0f2f5">fGetLine</a> (char *destination, int maxLength, ifstream &amp;iFile)</td></tr>
 </table>
 <hr/><h2>Member Function Documentation</h2>
@@ -215,16 +217,26 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="acb5a8190033e73423fc709600aa6e0a1"></a><!-- doxytag: member="StringUtils::skipWhiteSpace" ref="acb5a8190033e73423fc709600aa6e0a1" args="(char *string)" -->
+<a class="anchor" id="ad9d33749e001f653656fe304c5dbb063"></a><!-- doxytag: member="StringUtils::skipWhiteSpace" ref="ad9d33749e001f653656fe304c5dbb063" args="(char *string, int len=&#45;1)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">char * <a class="el" href="class_string_utils.html#acb5a8190033e73423fc709600aa6e0a1">StringUtils::skipWhiteSpace</a> </td>
+          <td class="memname">char * <a class="el" href="class_string_utils.html#ad9d33749e001f653656fe304c5dbb063">StringUtils::skipWhiteSpace</a> </td>
           <td>(</td>
           <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>string</em></td><td>)</td>
-          <td><code> [static]</code></td>
+          <td class="paramname"><em>string</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>len</em> = <code>-1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td><code> [static]</code></td>
         </tr>
       </table>
 </div>
@@ -233,6 +245,7 @@ Static Public Member Functions</h2></td></tr>
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
     <tr><td class="paramname">string</td><td>The string we want to skip white space in. </td></tr>
+    <tr><td class="paramname">len</td><td>Length of the string. If missing than this method can be unsafe. </td></tr>
   </table>
   </dd>
 </dl>
@@ -315,7 +328,7 @@ Static Public Member Functions</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 5 2011 17:19:23 for pdfToText by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu May 24 2012 23:05:02 for pdfToText by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6
 </small></address>

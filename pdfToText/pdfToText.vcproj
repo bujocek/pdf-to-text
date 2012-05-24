@@ -314,6 +314,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\mainpage.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PageTreeNode.h"
 					>
 				</File>

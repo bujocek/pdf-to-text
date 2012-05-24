@@ -25,12 +25,14 @@
  <tbody>
  <tr style="height: 56px;">
   
+  <td id="projectlogo"><img alt="Logo" src="logo2.png"/></td>
+  
   
   <td style="padding-left: 0.5em;">
    <div id="projectname">pdfToText
-   &#160;<span id="projectnumber">1.0</span>
+   &#160;<span id="projectnumber">2.0</span>
    </div>
-   
+   <div id="projectbrief">PDF to text conversion tool</div>
   </td>
   
   
@@ -108,7 +110,7 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_dictionary_object.html#a9a3e170c57ef911e3324d731e4dcfc4a">DictionaryObject</a> (char *startString, int length=-1, char **endKey=null)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_dictionary_object.html#a5128b1d08976f4f68401e5e0ff291fbc">DictionaryObject</a> (char **endKey, char *<a class="el" href="class_pdf_object.html#a4da8114b917a2ad19e01def5927db578">source</a>)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_dictionary_object.html#a8c439319116976e081f85912916e7012">~DictionaryObject</a> (void)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_pdf_object.html">PdfObject</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_dictionary_object.html#a653dc198fd038f7f043896df45cab35a">getObject</a> (char *mapKey)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_pdf_object.html">PdfObject</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_dictionary_object.html#ab4763cc2901575039fb87dccd27dd3ac">getObject</a> (char *mapKey, bool followToFirstObject=false)</td></tr>
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">std::map&lt; char *, <a class="el" href="class_pdf_object.html">PdfObject</a> <br class="typebreak"/>
@@ -208,16 +210,26 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="a653dc198fd038f7f043896df45cab35a"></a><!-- doxytag: member="DictionaryObject::getObject" ref="a653dc198fd038f7f043896df45cab35a" args="(char *mapKey)" -->
+<a class="anchor" id="ab4763cc2901575039fb87dccd27dd3ac"></a><!-- doxytag: member="DictionaryObject::getObject" ref="ab4763cc2901575039fb87dccd27dd3ac" args="(char *mapKey, bool followToFirstObject=false)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="class_pdf_object.html">PdfObject</a> * <a class="el" href="class_dictionary_object.html#a653dc198fd038f7f043896df45cab35a">DictionaryObject::getObject</a> </td>
+          <td class="memname"><a class="el" href="class_pdf_object.html">PdfObject</a> * <a class="el" href="class_dictionary_object.html#ab4763cc2901575039fb87dccd27dd3ac">DictionaryObject::getObject</a> </td>
           <td>(</td>
           <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>mapKey</em></td><td>)</td>
+          <td class="paramname"><em>mapKey</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>followToFirstObject</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div>
@@ -265,7 +277,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 5 2011 17:19:22 for pdfToText by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu May 24 2012 23:05:02 for pdfToText by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6
 </small></address>
