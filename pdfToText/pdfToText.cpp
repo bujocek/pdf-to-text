@@ -38,7 +38,7 @@ int _main(int argc, char* argv[], stringstream * preLog)
   int fromPage = 1;
   int toPage = 0;
   char * usageString = "\npdfToText: Wrong arguments. Usage: pdfToText(.exe) [input pdf file] [otput txt file] [optional args]\n\
-                       Optional arguments are: -pfrom [page number], -pto [page number]\n";
+                       Optional arguments are: -pfrom [page number], -pto [page number], -logenabled\n";
 
   if(argc < 3 || argc > 8) //program inputFile oputputFile [optional]
 	{
