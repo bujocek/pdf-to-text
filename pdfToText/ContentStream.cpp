@@ -3,14 +3,9 @@
 #include "EncodingTable.h"
 
 #ifdef _WIN32 || _WIN64
-#define NEWLINE L"\r\n" // windows
-#elif __APPLE__
-#define NEWLINE L"\r" // mac
 #else
-#define NEWLINE L"\n" //u**x
 #define wcscat_s mywcscat
 #endif
-
 
 ContentStream::ContentStream(IndirectObject * io, PageTreeNode * page)
 {
@@ -74,7 +69,7 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
 
   char * source = usingString;
   char ** endKey = &source;
-  source = StringUtils::skipWhiteSpace(source);
+  source = StringUtils::skipWhiteSpace(source, usingStringLen);
   int index = 0;
   PdfObject * value;
   do

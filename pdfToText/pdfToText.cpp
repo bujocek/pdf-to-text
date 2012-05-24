@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include "XRef.h"
 #include "IndirectObject.h"
 #include "DictionaryObject.h"
@@ -28,25 +29,14 @@ ofstream errStream ("errorfile.txt", ios::app);
 streambuf *clogBack, *cerrBack;
 iconv_t conv_desc = (iconv_t) -1;
 
-int _main(int argc, char* argv[])
+int _main(int argc, char* argv[], stringstream * preLog)
 {
-  if(logEnabled)
-	{
-		clog << "\nProgram launched with arguments:\n";
-    cout << "\nProgram launched with arguments:\n";
-		for(int ii = 0; ii < argc; ii++)
-		{
-			clog << (argv[ii]) << " ";
-      cout << (argv[ii]) << " ";
-		}
-	}
-
   int fromPage = 1;
   int toPage = 0;
   char * usageString = "\npdfToText: Wrong arguments. Usage: pdfToText(.exe) [input pdf file] [otput txt file] [optional args]\n\
                        Optional arguments are: -pfrom [page number], -pto [page number]\n";
 
-  if(argc < 3 || argc > 7) //program inputFile oputputFile [optional]
+  if(argc < 3 || argc > 8) //program inputFile oputputFile [optional]
 	{
 		cerr << "\npdfToText: Wrong number of arguments.\n";
 		cout << usageString;
@@ -54,10 +44,8 @@ int _main(int argc, char* argv[])
 	}
 		
 	char * inputFilePath = argv[1];
-	//sprintf_s(inputFilePath,strlen(inputFilePath), "%S", argv[1]);
-	//Open the PDF source file:
-	if(logEnabled)
-		clog << "\nOpening source file " << inputFilePath;
+  //Open the PDF source file:
+  *preLog << "\nOpening source file " << inputFilePath;
   cerr << "Input file: " << inputFilePath << endl;
 	ifstream filei (inputFilePath, ios::binary);
 	if (!filei.is_open() || !filei.good())
@@ -69,10 +57,8 @@ int _main(int argc, char* argv[])
 	filei.clear();
 
 	char * outputFilePath = argv[2];
-
 	//Discard existing output:
-	if(logEnabled)
-		clog << "\nOpening output file " << outputFilePath;
+	*preLog << "\nOpening output file " << outputFilePath;
   FILE * fileo = fopen( outputFilePath, "wb");
 	if (fileo == null)
 	{
@@ -84,7 +70,7 @@ int _main(int argc, char* argv[])
   //Process optional arguments
   for(int argindex = 3; argindex < argc; argindex++)
   {
-    if(strcmp(argv[argindex], "-pfrom") == 0)
+    if(stricmp(argv[argindex], "-pfrom") == 0)
     {
       if(argindex+1 < argc)
       {
@@ -97,7 +83,7 @@ int _main(int argc, char* argv[])
         }
       }
     }
-    if(strcmp(argv[argindex], "-pto") == 0)
+    if(stricmp(argv[argindex], "-pto") == 0)
     {
       if(argindex+1 < argc)
       {
@@ -110,9 +96,19 @@ int _main(int argc, char* argv[])
         }
       }
     }
+    if(stricmp(argv[argindex], "-logenabled") == 0)
+    {
+      logEnabled = true;
+      continue;
+    }
     cerr << "\npdfToText: Wrong arguments.\n";
     cout << usageString;
     return 1;
+  }
+
+  if(logEnabled)
+  {
+    clog<<preLog->str();
   }
 
 	conv_desc = iconv_open ("WCHAR_T", "UTF-16BE");
@@ -283,20 +279,26 @@ int main(int argc, char* argv[])
   time(&timer);
   ptm = localtime(&timer);
   startClock = clock();
+	logEnabled = false;
+  stringstream preLog;
 	
-	//TODO: Get logEnabled value from command line parameter (http://code.google.com/p/pdf-to-text/issues/detail?id=5)
-	logEnabled = true;
-	if(logEnabled)
-	{
-		clogBack = clog.rdbuf(logStream.rdbuf());
-    clog << "\n\n-------------------\n Start program " << ptm->tm_mday << "." << ptm->tm_mon + 1 << "." << ptm->tm_year + 1900
+	clogBack = clog.rdbuf(logStream.rdbuf());
+  preLog << "\n\n-------------------\n Start program " << ptm->tm_mday << "." << ptm->tm_mon + 1 << "." << ptm->tm_year + 1900
       << " " << ptm->tm_hour << ":" << ptm->tm_min << ":" << ptm->tm_sec << "\n--------------" << endl;
-	}
+	
 	cerrBack = cerr.rdbuf(errStream.rdbuf());
   cerr << "\n\n-------------------\n Start program " << ptm->tm_mday << "." << ptm->tm_mon+1 << "." << ptm->tm_year + 1900
     << " " << ptm->tm_hour << ":" << ptm->tm_min << ":" << ptm->tm_sec << endl;
   
-  int result = _main(argc, argv);
+  preLog << "\nProgram launched with arguments:\n";
+  cout << "\nProgram launched with arguments:\n";
+	for(int ii = 0; ii < argc; ii++)
+	{
+    preLog << (argv[ii]) << " ";
+    cout << (argv[ii]) << " ";
+	}
+
+  int result = _main(argc, argv, &preLog);
   end();
   return result;
 }

@@ -150,6 +150,6 @@ void DictionaryObject::processDictionaryString()
       actualPos = endKey;
       dictionaryMap[key->name] = value;
     }
-    actualPos = StringUtils::skipWhiteSpace(actualPos);
+    actualPos = StringUtils::skipWhiteSpace(actualPos, this->dictionaryStringLength-(actualPos-this->dictionaryString));
   }while(key != null && value != null && !(*actualPos == '>' && *(actualPos+1) == '>'));
 }

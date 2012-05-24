@@ -7,16 +7,21 @@
 #define null NULL
 
 #include "IndirectObject.h"
-
+#include <map>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #ifdef _WIN32 || _WIN64
+#define NEWLINE L"\r\n" // windows
 #include "iconv.h"
+#elif __APPLE__
+#define NEWLINE L"\r" // mac
+#include <iconv.h>
 #else
+#define NEWLINE L"\n" //u**x
 #include <iconv.h>
 #endif
-#include <map>
 
 using namespace std;
 

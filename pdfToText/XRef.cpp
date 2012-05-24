@@ -114,7 +114,7 @@ long XRef::findXRef()
 
 	pos+=9; //skip startxref keyword
 
-  pos = StringUtils::skipWhiteSpace(pos);
+  pos = StringUtils::skipWhiteSpace(pos, memBlockSize - (pos - &(memBlock[0])));
 	
 	//  -- get xref index --
 	int index = strtol(pos, NULL, 10);

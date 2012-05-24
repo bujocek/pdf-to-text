@@ -30,7 +30,7 @@ ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
     char * stream = this->indirectObject->unencodedStream;
     char * bcsr = strstr(stream, "begincodespacerange");
     bcsr += 19; //skip 'begincodespacerange' keyword
-    bcsr = StringUtils::skipWhiteSpace(bcsr);
+    bcsr = StringUtils::skipWhiteSpace(bcsr, this->indirectObject->unencodedStreamSize - (bcsr - stream));
     do
     {
       StringObject * codeFrom = new StringObject(&bcsr, bcsr);
@@ -44,7 +44,7 @@ ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
         cerr<<"\nToUnicodeMap: Couldn't read code ranges properly.\n";
         break;
       }
-      bcsr = StringUtils::skipWhiteSpace(bcsr);
+      bcsr = StringUtils::skipWhiteSpace(bcsr, this->indirectObject->unencodedStreamSize - (bcsr - stream));
     }while(*bcsr == '<');
     codeRanges.sort(compareRangeLen);
 
@@ -58,7 +58,7 @@ ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
         StringObject * utfString = new StringObject(&bbfc, bbfc);
         if(code.isHexa)
           codeCharMap[code.toNum()] = utfString;
-        bbfc = StringUtils::skipWhiteSpace(bbfc);
+        bbfc = StringUtils::skipWhiteSpace(bbfc, this->indirectObject->unencodedStreamSize - (bbfc - stream));
       }while(*bbfc == '<');
       bbfc = strstr(bbfc, "beginbfchar");
     }
@@ -78,7 +78,7 @@ ToUnicodeCMap::ToUnicodeCMap(IndirectObject * io)
         bfr.end = endCode.toNum();
         bfr.object = objectForRange;
         rangeMapList.push_front(bfr);
-        bbfc = StringUtils::skipWhiteSpace(bbfc);
+        bbfc = StringUtils::skipWhiteSpace(bbfc, this->indirectObject->unencodedStreamSize - (bbfc - stream));
       }while(*bbfc == '<');
       bbfc = strstr(bbfc, "beginbfrange");
     }

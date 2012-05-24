@@ -136,7 +136,7 @@ PdfObject * IndirectObject::getFirstObject()
     char * string = this->objectString;
     string = strstr(string, "obj");
     string += 3;
-    string = StringUtils::skipWhiteSpace(string);
+    string = StringUtils::skipWhiteSpace(string, this->objectStringSize - (string - this->objectString));
     this->firstObject = PdfObject::readValue(null, string);
   }
   return this->firstObject;
