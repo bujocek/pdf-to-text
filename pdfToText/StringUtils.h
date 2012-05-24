@@ -51,6 +51,7 @@ public:
   /**
   Skips all white space characters from the begining of the string and returns first position of non white space character.
   \param string The string we want to skip white space in.
+  \param len Length of the string. If missing than this method can be unsafe.
   \return Position of first non white space character.
   */
   static char * skipWhiteSpace(char * string, int len = -1);

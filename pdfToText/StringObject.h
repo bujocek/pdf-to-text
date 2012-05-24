@@ -72,6 +72,11 @@ public:
   int getByteStringLen();
 
   /**
+  length of hexa string
+  */
+  int getHexaStringLen();
+
+  /**
   Converts this string to unsigned char string (byte string)
   \return This string converted to bytes.
   */

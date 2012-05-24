@@ -204,7 +204,27 @@ wchar_t * ContentStream::getText( ContentStream * prevStream)
           break;
         }
       }
-      else if(strcmp(operatorObject->name,"Td") == 0 || strcmp(operatorObject->name,"TD") == 0 || strcmp(operatorObject->name,"TD") == 0)
+      else if(strcmp(operatorObject->name,"Td") == 0 || strcmp(operatorObject->name,"TD") == 0)
+      {
+        PdfObject * ty;
+        if(index >= 1)
+          ty = streamObjectMap[index-1];
+        else if(prevStream != null && prevStream->streamObjectMap.size() >= 1)
+        {
+          ty = prevStream->streamObjectMap[prevStream->streamObjectMap.size() - 1 + index];
+        }
+        else
+        {
+          cerr << "\nContentStream: Problem with determining operands between two content streams.\n";
+          break;
+        }
+        
+        if(ty->objectType == PdfObject::TYPE_NUMBER && ((NumberObject*)ty)->number != 0)
+          wcscat_s(result, this->indirectObject->unencodedStreamSize, NEWLINE);
+        //else //this is wrong - there need to be done some math to know if space should be added
+        //  wcscat_s(result, this->indirectObject->unencodedStreamSize, L" "); 
+      }
+      else if(strcmp(operatorObject->name,"T*") == 0)
       {
         wcscat_s(result, this->indirectObject->unencodedStreamSize, NEWLINE);
       }
@@ -304,8 +324,9 @@ wchar_t * ContentStream::convertStringWithToUnicode(StringObject * string, ToUni
       StringObject * stringCharCode = cmap->getUTFChar(charCode, i);
       if(stringCharCode == null)
       {
-        cerr << "\nContentStream:Couldn't get utf16be char from ToUnicode cmap.\n";
-        continue;
+        //cerr << "\nContentStream:Couldn't get utf16be char from ToUnicode cmap.\n";
+        delete[] newbytes;
+        return null;
       }
 
       //convert from UTF-16BE to wchar (unicode)
@@ -412,103 +433,106 @@ wchar_t * ContentStream::processStringObject(StringObject * stringObject)
     cerr << "\nContentStream: Can't proces null object in processStringObject method. Something went wrong.\n";
     return null;
   }
+
+  wchar_t * result = null;
   
   if(this->currentCMap != null) //try toUnicode map
   {
-    if(stringObject->isHexa)
-      return convertStringWithToUnicode(stringObject, this->currentCMap);
-    else  //TODO: find out why literal strings are not in ToUnicode map
-      return charToWchar((char*)stringObject->getByteString(), stringObject->getByteStringLen());
+    result = convertStringWithToUnicode(stringObject, this->currentCMap);
+    if(result != null)
+      return result;
   }
-  else
+  if(this->currentFont != null) //try some basic encoding
   {
-    if(this->currentFont != null) //try some basic encoding
+    char ** differences = null;
+    PdfObject * encoding = this->currentFont->getObject("/Encoding", true);
+    if(encoding != null && encoding->objectType == PdfObject::TYPE_DICTIONARY)
     {
-      char ** differences = null;
-      PdfObject * encoding = this->currentFont->getObject("/Encoding", true);
-      if(encoding != null && encoding->objectType == PdfObject::TYPE_DICTIONARY)
+      //TODO: get diffs from map
+      PdfObject * diffs;
+      diffs = ((DictionaryObject*) encoding)->getObject("/Differences", true);
+      if(diffs != null)
       {
-        //TODO: get diffs from map
-        PdfObject * diffs;
-        diffs = ((DictionaryObject*) encoding)->getObject("/Differences", true);
-        if(diffs != null)
+        if(diffs->objectType == PdfObject::TYPE_ARRAY)
         {
-          if(diffs->objectType == PdfObject::TYPE_ARRAY)
+          ArrayObject * diffsArr = (ArrayObject*) diffs;
+          differences = new char*[256];
+          int di;
+          for(di = 0; di < 256; di++)
           {
-            ArrayObject * diffsArr = (ArrayObject*) diffs;
-            differences = new char*[256];
-            int di;
-            for(di = 0; di < 256; di++)
-            {
-              differences[di] = null;
-            }
-            vector<PdfObject*>::iterator diffsArrIt = diffsArr->objectList.begin();
-            int charCode = 0;
-            for(; diffsArrIt != diffsArr->objectList.end(); diffsArrIt++)
-            {
-              if((*diffsArrIt)->objectType == PdfObject::TYPE_NUMBER)
-              {
-                charCode = (int) ((NumberObject*)(*diffsArrIt))->number;
-              }
-              if((*diffsArrIt)->objectType == PdfObject::TYPE_NAME)
-              {
-                int nameLen = strlen(((NameObject*)(*diffsArrIt))->name) -1;
-                char * diffName = new char[nameLen+1]; 
-                strncpy(diffName, ((NameObject*)(*diffsArrIt))->name+1, nameLen); //we need to add "+1" because we want remove initial '/' char
-                diffName[nameLen] = 0;
-                if(charCode >= 0 && charCode < 256)
-                  differences[charCode] = diffName;
-                else
-                {
-                  cerr << "\nContentStream: Problem with creating differences array.\n";
-                  break;
-                }
-                charCode++;
-              }
-            }
-            //TODO: set diffs to map
+            differences[di] = null;
           }
-          else
+          vector<PdfObject*>::iterator diffsArrIt = diffsArr->objectList.begin();
+          int charCode = 0;
+          for(; diffsArrIt != diffsArr->objectList.end(); diffsArrIt++)
           {
-            cerr << "\nContentStream: unknown object for differences array.\n";
+            if((*diffsArrIt)->objectType == PdfObject::TYPE_NUMBER)
+            {
+              charCode = (int) ((NumberObject*)(*diffsArrIt))->number;
+            }
+            if((*diffsArrIt)->objectType == PdfObject::TYPE_NAME)
+            {
+              int nameLen = strlen(((NameObject*)(*diffsArrIt))->name) -1;
+              char * diffName = new char[nameLen+1]; 
+              strncpy(diffName, ((NameObject*)(*diffsArrIt))->name+1, nameLen); //we need to add "+1" because we want remove initial '/' char
+              diffName[nameLen] = 0;
+              if(charCode >= 0 && charCode < 256)
+                differences[charCode] = diffName;
+              else
+              {
+                cerr << "\nContentStream: Problem with creating differences array.\n";
+                break;
+              }
+              charCode++;
+            }
           }
-        }
-        encoding = ((DictionaryObject*) encoding)->getObject("/BaseEncoding", true);
-      }
-      if(encoding != null && encoding->objectType == PdfObject::TYPE_NAME)
-      {
-        NameObject * encodingName = (NameObject*) encoding;
-        if(strcmp(encodingName->name, "/MacRomanEncoding") == 0)
-        {
-          return convertWithBaseEncoding(stringObject, encoding_MacRoman, differences);
-        }
-        else if(strcmp(encodingName->name, "/MacExpertEncoding") == 0)
-        {
-          return convertWithBaseEncoding(stringObject, encoding_MacExpert, differences);
-        }
-        else if(strcmp(encodingName->name, "/WinAnsiEncoding") == 0)
-        {
-          return convertWithBaseEncoding(stringObject, encoding_WinAnsi, differences);
+          //TODO: set diffs to map
         }
         else
         {
-          cerr << "\nContentStream: Unsupported encoding. Using simple conversion.\n";
-          return charToWchar((char*)stringObject->getByteString(), stringObject->getByteStringLen());
+          cerr << "\nContentStream: unknown object for differences array.\n";
         }
       }
-      else
+      encoding = ((DictionaryObject*) encoding)->getObject("/BaseEncoding", true);
+    }
+    if(encoding != null && encoding->objectType == PdfObject::TYPE_NAME)
+    {
+      NameObject * encodingName = (NameObject*) encoding;
+      if(strcmp(encodingName->name, "/MacRomanEncoding") == 0)
+      {
+        return convertWithBaseEncoding(stringObject, encoding_MacRoman, differences);
+      }
+      else if(strcmp(encodingName->name, "/MacExpertEncoding") == 0)
+      {
+        return convertWithBaseEncoding(stringObject, encoding_MacExpert, differences);
+      }
+      else if(strcmp(encodingName->name, "/WinAnsiEncoding") == 0)
+      {
+        return convertWithBaseEncoding(stringObject, encoding_WinAnsi, differences);
+      }
+      else if(strcmp(encodingName->name, "/StandardEncoding") == 0)
       {
         return convertWithBaseEncoding(stringObject, encoding_Standard, differences);
       }
+      else
+      {
+        if(this->currentCMap == null) //TODO: find out why some chars are missing in toUnicode map of type 0 font (use thesis.pdf)
+        {
+          cerr << "\nContentStream: Unsupported encoding. Using simple conversion.\n";
+        }
+        return charToWchar((char*)stringObject->getByteString(), stringObject->getByteStringLen());
+      }
     }
-    else
+    else //if no encoding specified than use standard one
     {
-      cerr << "\nContentStream: No font found for decoding string.\n";
-      return L"|-- Unknown string --|";
+      return convertWithBaseEncoding(stringObject, encoding_Standard, differences);
     }
-    cerr << "\nContentStream: All implemented methods for decoding string failed.\n";
-    return L"|-- Unknown string --|";
   }
-  
-  return null;
+  else
+  {
+    cerr << "\nContentStream: No font found for decoding string.\n";
+    return L"\0";
+  }
+  cerr << "\nContentStream: All implemented methods for decoding string failed.\n";
+  return L"\0";
 }

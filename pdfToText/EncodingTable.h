@@ -9,5 +9,5 @@
   extern const char *encoding_Symbol[];
   extern const char *encoding_ZapfDingbats[];
   extern const char *glyphlist[][2];
-#define GLYPHLIST_LEN 4280
+#define GLYPHLIST_LEN 4672
 #endif

@@ -166,11 +166,11 @@ int StringObject::toNum()
   if(this->isHexa)
   {
     int result = 0;
-    int len = this->getByteStringLen();
+    int len = this->getHexaStringLen();
     for(int i = 0; i<len; i++)
     {
       result *= 16;
-      result += this->getByteString()[i];
+      result += hexachartochar(this->getHexaString()[i]);
     }
     this->numVal = result;
     return result;
@@ -192,6 +192,22 @@ int StringObject::getByteStringLen()
     }
   }
   return this->byteStringLen;
+}
+
+int StringObject::getHexaStringLen()
+{
+  if(this->hexaStringLen < 0)
+  {
+    if(this->isHexa)
+    {
+      this->hexaStringLen = this->length;
+    }
+    else
+    {
+      getHexaString(); //we need to generate the string to know proper size
+    }
+  }
+  return this->hexaStringLen;
 }
 
 unsigned char charToNum(char ch)
